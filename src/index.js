@@ -24,3 +24,24 @@ class Task {
 }
 
 
+class TaskFolder{
+    constructor(name) {
+        this._taskList=[]
+    }
+
+    //Getters
+    getTaskList(){
+        return this._taskList;
+    }
+
+    //helpers
+    addTask(name,description,dueDate){
+        let task = new Task(name,description,dueDate);
+        this._taskList.push(task);
+    }
+
+    removeTask(taskId){
+        //find index of task using dom Id and pop task maybe?
+    }
+}
+
