@@ -1,4 +1,5 @@
 import {compareAsc, format} from 'date-fns'
+import css from "./style.css";
 
 
 class Task {
