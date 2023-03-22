@@ -40,10 +40,19 @@ class  DomController{
         taskDetailContainer.appendChild(task);
     }
 
+    displayFolderTasks(TaskFolder){
+
+        for(let i=0;i<TaskFolder.getTaskList().length;i++){
+            console.log(TaskFolder.getTaskList()[i]);
+            this.addTaskToDom(TaskFolder.getTaskList()[i]);
+        }
+    }
+
     //add way to find specific dom element and remove task. probably take id from check box or add id to task
 }
 
 class Task {
+    //let user create name so its easy to find task fo modify
     constructor(name, description, dueDate) {
         this._name = name;
         this._description = description;
@@ -82,9 +91,8 @@ class TaskFolder{
     }
 
     //helpers
-    addTask(name,description,dueDate){
-        let task = new Task(name,description,dueDate);
-        this._taskList.push(task);
+    addTask(Task){
+        this._taskList.push(Task);
     }
 
     removeTask(taskId){
@@ -99,14 +107,14 @@ let domTester= new DomController();
 let doit=new Task('that','test','02/04/66')
 
 
-domTester.addTaskFolderToDom(testFolder);
-domTester.addTaskFolderToDom(testFolder);
-domTester.addTaskFolderToDom(testFolder);
-domTester.addTaskFolderToDom(testFolder);
+testFolder.addTask(doit)
+testFolder.addTask(doit)
+testFolder.addTask(doit)
+testFolder.addTask(doit)
+testFolder.addTask(doit)
+testFolder.addTask(doit)
 
-domTester.addTaskToDom(doit)
-domTester.addTaskToDom(doit)
-domTester.addTaskToDom(doit)
-domTester.addTaskToDom(doit)
-domTester.addTaskToDom(doit)
+
+domTester.displayFolderTasks(testFolder);
+
 
