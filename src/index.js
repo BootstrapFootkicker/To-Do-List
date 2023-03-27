@@ -1,11 +1,31 @@
 import {compareAsc, format} from 'date-fns'
 import css from "./style.css";
 
+document.addEventListener('click', e=>{
+
+    const isDropdownButton =e.target.matches("[data-dropdown-button]");
+    //are we in dropdown? ignore click if so
+    if(!isDropdownButton && e.target.closest("[data-dropdown]")!=null){return}
+
+    //if we are clicking dropdown add active class
+    let currentDropdown
+    if(isDropdownButton){
+        currentDropdown =e.target.closest('[data-dropdown]');
+        currentDropdown.classList.toggle('active');
+    }
+
+    //closes all dropdowns that are not selected
+    document.querySelectorAll("[data-dropdown].active").forEach(dropdown=>{
+        if(dropdown === currentDropdown) {return}
+        dropdown.classList.remove('active')
+    })
+})
+
 class  DomController{
 
     addTaskFolderToDom(TaskFolder){
         let taskContainerContent= document.querySelector(".tasks-container-content");
-        let taskFolder = document.createElement('a')
+        let taskFolder = document.createElement('button')
         let taskFolderListContainer = document.createElement('li')
         taskFolder.innerText=TaskFolder.getName();
         taskFolderListContainer.appendChild(taskFolder)

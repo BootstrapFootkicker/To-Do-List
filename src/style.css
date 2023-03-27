@@ -28,7 +28,7 @@ body {
 }
 
 .task-sidebar {
-    width: 15%;
+ min-width:10%;
     border-right: black solid 2px;
     padding: 20px;
 
@@ -37,7 +37,7 @@ body {
 .task-detail-container {
     display: flex;
     flex-direction: column;
-    width: 85%;
+    width: 90%;
     gap: 15px;
     padding: 20px;
 
@@ -73,4 +73,53 @@ body {
     width: 100%;
     border-radius: 20px;
 }
+
+ul{
+    list-style: none;
+}
+
+
+.dropdown{
+    position: relative;
+}
+
+
+.dropdown.active > .create-link+ .dropdown-menu{
+    opacity: 1;
+    transform:translateY(0);
+    pointer-events: auto;
+
+}
+.dropdown.active > .create-link, .create-link:hover{
+    color: black;
+}
+
+.dropdown-menu{
+    position:absolute;
+    left: 0;
+    top: calc(100% + .25rem);
+    background-color: white;
+    padding: .75rem;
+    border-radius: .25rem;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.1);
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
+    pointer-events: none;
+}
+
+
+.create-link{
+    background:none;
+    border:none;
+    text-decoration:none;
+    color: #777;
+    font-size: inherit;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 0;
+}
+
+
+
 

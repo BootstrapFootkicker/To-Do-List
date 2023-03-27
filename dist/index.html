@@ -13,7 +13,12 @@
 <header class="header-container">
     <div class="header-left-elements-container">
         <div class="hideIcon-container">placeholder img</div>
-        <div class="header-title-container">TO DO LIST</div>
+
+        <div class="dropdown" data-dropdown>
+            <button class="create-link" data-dropdown-button>Create</button>
+            <div class="dropdown-menu">DropDown Content</div>
+        </div>
+
     </div>
 
     <div class="header-middle-element-container">
@@ -26,10 +31,12 @@
 <div class="main-container">
     <div class="task-sidebar">
         <div class="add-task-button-container">
-            <button class="create-task-button">Create</button>
+
             <div class="task-container">
                 <ul class="tasks-container-content">
-                    <li><a href="google.com">My Tasks</a></li>
+                    <li>
+                        <button class="taskfolder-button">My Tasks</button>
+                    </li>
                 </ul>
             </div>
         </div>
