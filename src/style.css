@@ -53,7 +53,14 @@ body {
 
 
 }
+.task-detail-container input{
+    width: 20.5rem;
+}
 
+.create-buttonDiv{
+    display: flex;
+    justify-content: center;
+}
 
 .checkbox-container {
     display: flex;

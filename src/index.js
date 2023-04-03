@@ -1,10 +1,6 @@
 import {compareAsc, format} from 'date-fns'
 import css from "./style.css";
 
-const CREATE_TASK_BUTTON = document.querySelector('#create-task');
-let myTasks = [];
-
-
 document.addEventListener('click', e => {
 
     const isDropdownButton = e.target.matches("[data-dropdown-button]");
@@ -31,6 +27,66 @@ document.addEventListener('click', e => {
 
 class DomController {
 
+    clear(element) {
+        while (element.firstChild) {
+            element.removeChild(element.lastChild);
+        }
+    }
+
+    createAddTaskButton() {
+        let taskDetailContainer = document.querySelector('.task-detail-container');
+        let createButtonDiv = document.createElement('div');
+        let createButton = document.createElement('button');
+        createButton.innerText = '+ Add Task'
+        createButton.classList.add('create-button')
+        createButtonDiv.classList.add('create-buttonDiv')
+        createButtonDiv.appendChild(createButton)
+
+
+        taskDetailContainer.appendChild(createButtonDiv);
+
+        createButton.addEventListener('click', () => {
+            domControl.clear(createButtonDiv);
+            createButtonDiv.appendChild(domControl.createInputPopUp());
+        })
+
+    }
+
+
+    createInputPopUp() {
+
+
+        let popUpContainer = document.createElement('div');
+        let taskDateContainer = document.createElement('div');
+        let taskInput = document.createElement('input');
+        let dateInput = document.createElement('input')
+        let buttonContainer = document.createElement('div')
+        let addButton = document.createElement('button')
+        let cancelButton = document.createElement('button');
+
+
+        dateInput.type = 'date';
+        addButton.innerText = 'Add';
+        cancelButton.innerText = 'Cancel'
+
+        taskDateContainer.appendChild(taskInput);
+        taskDateContainer.appendChild(dateInput)
+
+        buttonContainer.appendChild(addButton);
+        buttonContainer.appendChild(cancelButton);
+
+        popUpContainer.appendChild(taskDateContainer)
+        popUpContainer.appendChild(buttonContainer)
+
+        addButton.addEventListener('click', () => {
+            console.log('press!')
+            this.clear(createButtonDiv)
+            this.createAddTaskButton();
+            this.addTaskToDom(taskInput.value, dateInput.value);
+        })
+        return popUpContainer;
+    }
+
     addTaskFolderToDom(TaskFolder) {
         let taskContainerContent = document.querySelector(".tasks-container-content");
         let taskFolder = document.createElement('button')
@@ -41,54 +97,45 @@ class DomController {
 
     }
 
-    addTaskToDom() {
+    addTaskToDom(taskText, taskDateInfo) {
         let taskDetailContainer = document.querySelector('.task-detail-container');
         let task = document.createElement('div');
         let checkBoxContainer = document.createElement('div');
         let checkBox = document.createElement('input');
         let taskInfo = document.createElement('div');
-        let taskDate = document.createElement('div');
+        let taskDate = document.createElement('input');
 
+
+        taskDate.type = 'date';
+        taskDate.value = taskDateInfo;
         task.classList.add('task')
         checkBoxContainer.classList.add('checkbox-container')
         taskInfo.classList.add('task-info')
-        // taskDate.classList.add('')
+        //taskDate.classList.add('')
+
+
+        taskInfo.innerText = taskText;
 
 
         checkBox.type = 'checkbox'
-
-        taskInfo.setAttribute('contenteditable', 'true');
-        taskDate.setAttribute('contenteditable', 'true');
-
-        taskInfo.innerText = 'Enter Task Name';
-        taskDate.innerText = '';
-
 
         checkBoxContainer.appendChild(checkBox);
         checkBoxContainer.appendChild(taskInfo);
         task.appendChild(checkBoxContainer);
         task.appendChild(taskDate);
 
-        taskInfo.focus();
 
         taskDetailContainer.setAttribute('id', taskInfo + 'div')
 
         taskDetailContainer.appendChild(task);
 
-        let newTask = new Task('task', taskInfo.innerText, taskDate.innerText)
-
+        // let newTask=new Task(task,taskInfo.innerText,taskDate.innerText);
+        // let index =findTaskfolderIndex(folderOption);
+        // taskFolders[index].push(newTask);
 
     }
 
-    displayFolderTasks(TaskFolder) {
 
-        for (let i = 0; i < TaskFolder.getTaskList().length; i++) {
-            console.log(TaskFolder.getTaskList()[i]);
-            this.addTaskToDom(TaskFolder.getTaskList()[i]);
-        }
-    } 
-
-    //add way to find specific dom element and remove task. probably take id from check box or add id to task
 }
 
 class Task {
@@ -154,33 +201,42 @@ class TaskFolder {
     }
 }
 
-
-let
-    testFolder = new TaskFolder('this is a test');
-let
-    domTester = new DomController();
-let doit = new Task('that', 'test', '02/04/2566')
-let doit2 = new Task('that2', 'test', '02/04/2566')
-let doit3 = new Task('that3', 'test', '02/04/2566')
-let doit4 = new Task('that4', 'test', '02/04/2566')
+function findTaskfolderIndex(folderName) {
+    let isTitle = (element) => element.getName() === folderName;
+    return taskFolders.findIndex(isTitle);
 
 
-testFolder.addTask(doit)
-testFolder.addTask(doit2)
-testFolder.addTask(doit3)
-testFolder.addTask(doit4)
+}
+
+const CREATE_TASK_BUTTON = document.querySelector('#create-task');
+const mytaskbutton = document.querySelector('.taskfolder-button');
+const addTaskButton = document.querySelector('#add-task');
+const createButtonDiv = document.querySelector('.create-buttonDiv')
+let folderOption = 'My Tasks';
 
 
-//domTester.displayFolderTasks(testFolder);
+let taskFolders = [];
+
+
+let domControl = new DomController();
 
 
 // CREATE_TASK_BUTTON
 //     .addEventListener(
-//         'click'
-//         ,
-//         domTester
-//             .addTaskToDom
+//         'click', domControl.addTaskToDom
 //     )
 
 
-console.log(testFolder.taskExists(doit2,testFolder.getTaskList()))
+mytaskbutton.addEventListener('click', () => {
+    folderOption = mytaskbutton.innerText
+    console.log(folderOption)
+})
+
+
+// addTaskButton.addEventListener('click', () => {
+//     domControl.clear(createButtonDiv);
+//     createButtonDiv.appendChild(domControl.createInputPopUp());
+//
+// })
+
+domControl.createAddTaskButton();
