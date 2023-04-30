@@ -29,13 +29,14 @@ class DomController {
 
     clear(element) {
         while (element.firstChild) {
+            console.log(element.lastChild)
             element.removeChild(element.lastChild);
         }
     }
 
     createAddTaskButton() {
         let taskDetailContainer = document.querySelector('.task-detail-container');
-        let createButtonDiv = document.createElement('div');
+        let createButtonDiv = document.querySelector('.create-buttonDiv');
         let createButton = document.createElement('button');
         createButton.innerText = '+ Add Task'
         createButton.classList.add('create-button')
@@ -80,9 +81,14 @@ class DomController {
 
         addButton.addEventListener('click', () => {
             console.log('press!')
-            this.clear(createButtonDiv)
-            this.createAddTaskButton();
-            this.addTaskToDom(taskInput.value, dateInput.value);
+            this.clear(createButtonDiv);
+
+
+
+
+
+            //this.createAddTaskButton();
+            //this.addTaskToDom(taskInput.value, dateInput.value);
         })
         return popUpContainer;
     }
@@ -221,10 +227,7 @@ let taskFolders = [];
 let domControl = new DomController();
 
 
-// CREATE_TASK_BUTTON
-//     .addEventListener(
-//         'click', domControl.addTaskToDom
-//     )
+
 
 
 mytaskbutton.addEventListener('click', () => {
@@ -233,10 +236,6 @@ mytaskbutton.addEventListener('click', () => {
 })
 
 
-// addTaskButton.addEventListener('click', () => {
-//     domControl.clear(createButtonDiv);
-//     createButtonDiv.appendChild(domControl.createInputPopUp());
-//
-// })
+
 
 domControl.createAddTaskButton();
