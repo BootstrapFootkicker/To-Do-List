@@ -36,7 +36,7 @@ class DomController {
 
     createAddTaskButton() {
         let taskDetailContainer = document.querySelector('.task-detail-container');
-        let createButtonDiv = document.querySelector('.create-buttonDiv');
+        let createButtonDiv = document.createElement('div'); //remove this
         let createButton = document.createElement('button');
         createButton.innerText = '+ Add Task'
         createButton.classList.add('create-button')
@@ -81,14 +81,10 @@ class DomController {
 
         addButton.addEventListener('click', () => {
             console.log('press!')
-            this.clear(createButtonDiv);
-
-
-
-
-
-            //this.createAddTaskButton();
-            //this.addTaskToDom(taskInput.value, dateInput.value);
+            let createButtonDiv = document.querySelector('.create-buttonDiv');
+            createButtonDiv.remove();
+            this.addTaskToDom(taskInput.value, dateInput.value);
+            this.createAddTaskButton();
         })
         return popUpContainer;
     }
@@ -117,9 +113,6 @@ class DomController {
         task.classList.add('task')
         checkBoxContainer.classList.add('checkbox-container')
         taskInfo.classList.add('task-info')
-        //taskDate.classList.add('')
-
-
         taskInfo.innerText = taskText;
 
 
@@ -135,9 +128,7 @@ class DomController {
 
         taskDetailContainer.appendChild(task);
 
-        // let newTask=new Task(task,taskInfo.innerText,taskDate.innerText);
-        // let index =findTaskfolderIndex(folderOption);
-        // taskFolders[index].push(newTask);
+
 
     }
 
@@ -227,15 +218,10 @@ let taskFolders = [];
 let domControl = new DomController();
 
 
-
-
-
 mytaskbutton.addEventListener('click', () => {
     folderOption = mytaskbutton.innerText
     console.log(folderOption)
 })
-
-
 
 
 domControl.createAddTaskButton();
