@@ -25,11 +25,43 @@ document.addEventListener('click', e => {
     })
 })
 
+
+function saveToLocalStorage() {
+
+}
+function storageAvailable(type) {
+    let storage;
+    try {
+        storage = window[type];
+        const x = "__storage_test__";
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    } catch (e) {
+        return (
+            e instanceof DOMException &&
+            // everything except Firefox
+            (e.code === 22 ||
+                // Firefox
+                e.code === 1014 ||
+                // test name field too, because code might not be present
+                // everything except Firefox
+                e.name === "QuotaExceededError" ||
+                // Firefox
+                e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            storage &&
+            storage.length !== 0
+        );
+    }
+}
+
+
+
 class DomController {
 
     clear(element) {
         while (element.firstChild) {
-            console.log(element.lastChild)
             element.removeChild(element.lastChild);
         }
     }
@@ -80,7 +112,8 @@ class DomController {
         popUpContainer.appendChild(buttonContainer)
 
         addButton.addEventListener('click', () => {
-            console.log('press!')
+            let newTask = new Task(uniqueId,taskInput.value, dateInput.value);
+            mainTaskFolder.addTask(newTask);
             let createButtonDiv = document.querySelector('.create-buttonDiv');
             createButtonDiv.remove();
             this.addTaskToDom(taskInput.value, dateInput.value);
@@ -107,7 +140,8 @@ class DomController {
         let taskInfo = document.createElement('div');
         let taskDate = document.createElement('input');
 
-
+        task.setAttribute('id', uniqueId)
+        uniqueId+=1;
         taskDate.type = 'date';
         taskDate.value = taskDateInfo;
         task.classList.add('task')
@@ -117,6 +151,18 @@ class DomController {
 
 
         checkBox.type = 'checkbox'
+
+        checkBox.addEventListener('click', () => {
+            if (checkBox.checked) {
+                mainTaskFolder.removeTask(task.id);
+                console.log(mainTaskFolder.getTaskList());
+                this.removeTaskFromDom(task.id)
+
+
+            }
+
+
+        })
 
         checkBoxContainer.appendChild(checkBox);
         checkBoxContainer.appendChild(taskInfo);
@@ -128,6 +174,14 @@ class DomController {
 
         taskDetailContainer.appendChild(task);
 
+
+    }
+
+
+    removeTaskFromDom(taskId) {
+        let task = document.getElementById(taskId);
+        console.log(taskId + ' removed from dom')
+        task.remove();
 
 
     }
@@ -174,45 +228,70 @@ class TaskFolder {
         return this._taskList;
     }
 
+    toString() {
+        for (let i = 0; i < this._taskList.length; i++) {
+            console.log(this._taskList[i].getName());
+        }
+
+    }
+
     //helpers
     addTask(Task) {
         this._taskList.push(Task);
+        console.log(`${Task.getName()} added to ${this.getName()} folder`)
+          console.log(mainTaskFolder.getTaskList());
     }
+    
+    removeTask(taskId) {
+        this.taskExists(taskId, mainTaskFolder);
+        // if(this.taskExists(taskId, this._taskList)){
+        //     console.log("It really exists")
+        //     let taskIndex = this._taskList.findIndex(element => element.getName() === taskId.getName());
+        //     this._taskList.splice(taskIndex, 1);
+        //     console.log(`${taskId.getName()} removed from ${this.getName()} folder`)
+        // }
+        // else
+        // {
+        //     console.log("It doesn't exist");
+        }
 
 
-    taskExists(task, folderList) {
+
+
+    taskExists(taskId) {
 
 
         let doesExist;
-        for (let taskNumber in folderList) {
+        console.log(this._taskList + " taskList")
+        for (let i = 0; i < this._taskList.length; i++) {
+            console.log(this._taskList[i].getName() + " taskList[i].getName()")}
 
-            doesExist = (folderList[taskNumber].getName() === task.getName());
+            // console.log(folderList[taskNumber].getName());
+            // doesExist = (folderList[taskNumber].getName()) === taskId;
             if (doesExist === true) {
                 return doesExist;
             }
         }
-    }
-
-    removeTask(taskId) {
-        //find index of task using dom Id and pop task maybe?
-    }
-}
-
-function findTaskfolderIndex(folderName) {
-    let isTitle = (element) => element.getName() === folderName;
-    return taskFolders.findIndex(isTitle);
-
 
 }
+
+// function findTaskfolderIndex(folderName) {
+//     let isTitle = (element) => element.getName() === folderName;
+//     return taskFolders.findIndex(isTitle);
+//
+//
+// }
 
 const CREATE_TASK_BUTTON = document.querySelector('#create-task');
 const mytaskbutton = document.querySelector('.taskfolder-button');
 const addTaskButton = document.querySelector('#add-task');
 const createButtonDiv = document.querySelector('.create-buttonDiv')
+
 let folderOption = 'My Tasks';
+let mainTaskFolder = new TaskFolder('Main');
+let uniqueId = 0;
 
 
-let taskFolders = [];
 
 
 let domControl = new DomController();
