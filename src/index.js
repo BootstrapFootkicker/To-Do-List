@@ -154,8 +154,7 @@ class DomController {
 
         checkBox.addEventListener('click', () => {
             if (checkBox.checked) {
-                mainTaskFolder.removeTask(task.id);
-                console.log(mainTaskFolder.getTaskList());
+                mainTaskFolder.removeTask(task.id, mainTaskFolder);
                 this.removeTaskFromDom(task.id)
 
 
@@ -242,35 +241,35 @@ class TaskFolder {
           console.log(mainTaskFolder.getTaskList());
     }
     
-    removeTask(taskId) {
-        this.taskExists(taskId, mainTaskFolder);
-        // if(this.taskExists(taskId, this._taskList)){
-        //     console.log("It really exists")
-        //     let taskIndex = this._taskList.findIndex(element => element.getName() === taskId.getName());
-        //     this._taskList.splice(taskIndex, 1);
-        //     console.log(`${taskId.getName()} removed from ${this.getName()} folder`)
-        // }
-        // else
-        // {
-        //     console.log("It doesn't exist");
+    removeTask(taskId,taskFolder) {
+
+        if(taskFolder.taskExists(taskId,taskFolder)){
+            taskFolder._taskList.splice(taskFolder._taskList.findIndex(task => task.getName().toString() === taskId), 1);
+            console.log(`${taskId} removed from ${taskFolder.getName()} folder`);
+            console.log(taskFolder.getTaskList());
+
+        }
+        else{
+            console.log("Task doesn't exist")
+        }
+
         }
 
 
 
 
-    taskExists(taskId) {
+    taskExists(taskId,taskFolder) {
 
-
+        let taskFolderList=taskFolder.getTaskList();
         let doesExist;
-        console.log(this._taskList + " taskList")
-        for (let i = 0; i < this._taskList.length; i++) {
-            console.log(this._taskList[i].getName() + " taskList[i].getName()")}
 
-            // console.log(folderList[taskNumber].getName());
-            // doesExist = (folderList[taskNumber].getName()) === taskId;
-            if (doesExist === true) {
-                return doesExist;
-            }
+
+       for (let i=0;i<taskFolderList.length;i++){
+         if (taskId === taskFolderList[i].getName().toString()){
+             doesExist=true;
+             return doesExist;
+         }
+       }
         }
 
 }
