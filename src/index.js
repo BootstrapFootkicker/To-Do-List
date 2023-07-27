@@ -274,12 +274,7 @@ class TaskFolder {
 
 }
 
-// function findTaskfolderIndex(folderName) {
-//     let isTitle = (element) => element.getName() === folderName;
-//     return taskFolders.findIndex(isTitle);
-//
-//
-// }
+
 
 const CREATE_TASK_BUTTON = document.querySelector('#create-task');
 const mytaskbutton = document.querySelector('.taskfolder-button');
