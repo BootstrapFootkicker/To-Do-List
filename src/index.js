@@ -281,8 +281,10 @@ const mytaskbutton = document.querySelector('.taskfolder-button');
 const addTaskButton = document.querySelector('#add-task');
 const createButtonDiv = document.querySelector('.create-buttonDiv')
 
+//Global Variables
 let folderOption = 'My Tasks';
 let mainTaskFolder = new TaskFolder('Main');
+//Used to label tasks with unique id (both in dom and in taskFolder)
 let uniqueId = 0;
 
 
