@@ -1,6 +1,20 @@
 import {compareAsc, format} from 'date-fns'
 import css from "./style.css";
 
+//todo: Fix local storage
+
+//todo: add edit button to task
+
+//todo: add edit button to task folder
+
+//todo:create refresh function for local storage in taskfolder class
+
+function localStorageRefresh(folder) {
+    localStorage.removeItem(folder);
+    localStorage.setItem(folder.getName(),JSON.stringify(folder));
+    console.log("refreshed")
+
+}
 document.addEventListener('click', e => {
 
     const isDropdownButton = e.target.matches("[data-dropdown-button]");
@@ -239,6 +253,7 @@ class TaskFolder {
         this._taskList.push(Task);
         console.log(`${Task.getName()} added to ${this.getName()} folder`)
           console.log(mainTaskFolder.getTaskList());
+        localStorageRefresh(mainTaskFolder);
     }
 
     removeTask(taskId,taskFolder) {
@@ -247,6 +262,7 @@ class TaskFolder {
             taskFolder._taskList.splice(taskFolder._taskList.findIndex(task => task.getName().toString() === taskId), 1);
             console.log(`${taskId} removed from ${taskFolder.getName()} folder`);
             console.log(taskFolder.getTaskList());
+            localStorageRefresh(mainTaskFolder);
 
         }
         else{
@@ -290,6 +306,7 @@ let uniqueId = 0;
 
 
 
+
 let domControl = new DomController();
 
 
@@ -300,3 +317,18 @@ mytaskbutton.addEventListener('click', () => {
 
 
 domControl.createAddTaskButton();
+
+
+
+
+if(localStorage.getItem('mainTaskFolder')!==null){
+    let taskList=JSON.parse(localStorage.getItem('mainTaskFolder'))._taskList;
+    console.log(taskList)
+    for (let i=0;i<taskList.length;i++){
+        domControl.addTaskToDom(taskList[i]._description,taskList[i]._dueDate);
+    }
+    console.log("Console Populated using local storage")
+}else
+{console.log("No tasks in local storage")}
+
+console.log(mainTaskFolder.getTaskList())
