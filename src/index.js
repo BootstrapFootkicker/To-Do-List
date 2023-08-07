@@ -1,16 +1,15 @@
 import {compareAsc, format} from 'date-fns'
 import css from "./style.css";
 
-//todo: Fix local storage
 
 //todo: add edit button to task
 
 //todo: add edit button to task folder
 
-//todo:create refresh function for local storage in taskfolder class
+
 
 function localStorageRefresh(folder) {
-    localStorage.removeItem(folder);
+    //localStorage.removeItem(folder);
     localStorage.setItem(folder.getName(),JSON.stringify(folder));
     console.log("refreshed")
 
@@ -241,6 +240,10 @@ class TaskFolder {
         return this._taskList;
     }
 
+    setTaskList(taskList){
+        this._taskList = taskList;
+    }
+
     toString() {
         for (let i = 0; i < this._taskList.length; i++) {
             console.log(this._taskList[i].getName());
@@ -256,6 +259,7 @@ class TaskFolder {
         localStorageRefresh(mainTaskFolder);
     }
 
+
     removeTask(taskId,taskFolder) {
 
         if(taskFolder.taskExists(taskId,taskFolder)){
@@ -269,6 +273,11 @@ class TaskFolder {
             console.log("Task doesn't exist")
         }
 
+        }
+        setTaskClass(){
+            for (let i=0;i<this._taskList.length;i++){
+                this._taskList[i]=new Task(this._taskList[i]._name,this._taskList[i]._description,this._taskList[i]._dueDate);
+            }
         }
 
 
@@ -321,14 +330,23 @@ domControl.createAddTaskButton();
 
 
 
-if(localStorage.getItem('mainTaskFolder')!==null){
-    let taskList=JSON.parse(localStorage.getItem('mainTaskFolder'))._taskList;
-    console.log(taskList)
-    for (let i=0;i<taskList.length;i++){
-        domControl.addTaskToDom(taskList[i]._description,taskList[i]._dueDate);
-    }
-    console.log("Console Populated using local storage")
-}else
-{console.log("No tasks in local storage")}
+if(localStorage.getItem('Main')!==null){
+    console.log("Local Storage Populated")
 
-console.log(mainTaskFolder.getTaskList())
+    let tasklist=JSON.parse(localStorage.getItem('Main'))._taskList;
+
+    mainTaskFolder.setTaskList(tasklist);
+    mainTaskFolder.setTaskClass();
+    console.log(mainTaskFolder.getTaskList())
+
+
+
+    for (let i=0;i<mainTaskFolder.getTaskList().length;i++){
+        domControl.addTaskToDom(mainTaskFolder.getTaskList()[i]['_description'],mainTaskFolder.getTaskList()[i]['_dueDate'])
+        //console.log(mainTaskFolder.getTaskList()[i]['_description'])
+    }
+
+}else
+
+{console.log("No tasks in local storage")
+console.log(mainTaskFolder.getTaskList())}
