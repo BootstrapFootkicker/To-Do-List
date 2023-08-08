@@ -14,6 +14,10 @@ function localStorageRefresh(folder) {
     console.log("refreshed")
 
 }
+
+function UniqueIdToLocalStore(uniqueId) {
+    localStorage.setItem('uniqueId', JSON.stringify(uniqueId));
+}
 document.addEventListener('click', e => {
 
     const isDropdownButton = e.target.matches("[data-dropdown-button]");
@@ -144,7 +148,49 @@ class DomController {
         taskContainerContent.appendChild(taskFolderListContainer);
 
     }
+    addPreviousTasksToDom(existingID,taskText,taskDateInfo) {
+         let taskDetailContainer = document.querySelector('.task-detail-container');
+        let task = document.createElement('div');
+        let checkBoxContainer = document.createElement('div');
+        let checkBox = document.createElement('input');
+        let taskInfo = document.createElement('div');
+        let taskDate = document.createElement('input');
 
+        task.setAttribute('id', existingID)
+
+        taskDate.type = 'date';
+        taskDate.value = taskDateInfo;
+        task.classList.add('task')
+        checkBoxContainer.classList.add('checkbox-container')
+        taskInfo.classList.add('task-info')
+        taskInfo.innerText = taskText;
+
+          checkBox.type = 'checkbox'
+
+        checkBox.addEventListener('click', () => {
+            if (checkBox.checked) {
+                mainTaskFolder.removeTask(task.id, mainTaskFolder);
+                this.removeTaskFromDom(task.id)
+
+
+            }
+
+
+
+    })
+
+
+     checkBoxContainer.appendChild(checkBox);
+        checkBoxContainer.appendChild(taskInfo);
+        task.appendChild(checkBoxContainer);
+        task.appendChild(taskDate);
+
+
+        taskDetailContainer.setAttribute('id', taskInfo + 'div')
+
+        taskDetailContainer.appendChild(task);
+
+        console.log("it RAN!")}
     addTaskToDom(taskText, taskDateInfo) {
         let taskDetailContainer = document.querySelector('.task-detail-container');
         let task = document.createElement('div');
@@ -155,6 +201,7 @@ class DomController {
 
         task.setAttribute('id', uniqueId)
         uniqueId+=1;
+        UniqueIdToLocalStore(uniqueId);
         taskDate.type = 'date';
         taskDate.value = taskDateInfo;
         task.classList.add('task')
@@ -331,10 +378,11 @@ domControl.createAddTaskButton();
 
 
 if(localStorage.getItem('Main')!==null){
+
     console.log("Local Storage Populated")
 
     let tasklist=JSON.parse(localStorage.getItem('Main'))._taskList;
-
+    uniqueId=Number(localStorage.getItem('uniqueId'));
     mainTaskFolder.setTaskList(tasklist);
     mainTaskFolder.setTaskClass();
     console.log(mainTaskFolder.getTaskList())
@@ -342,7 +390,7 @@ if(localStorage.getItem('Main')!==null){
 
 
     for (let i=0;i<mainTaskFolder.getTaskList().length;i++){
-        domControl.addTaskToDom(mainTaskFolder.getTaskList()[i]['_description'],mainTaskFolder.getTaskList()[i]['_dueDate'])
+        domControl.addPreviousTasksToDom(mainTaskFolder.getTaskList()[i]['_name'],mainTaskFolder.getTaskList()[i]['_description'],mainTaskFolder.getTaskList()[i]['_dueDate'])
         //console.log(mainTaskFolder.getTaskList()[i]['_description'])
     }
 
