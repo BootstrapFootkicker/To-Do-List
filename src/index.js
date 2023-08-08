@@ -1,5 +1,6 @@
 import {compareAsc, format} from 'date-fns'
 import css from "./style.css";
+import {th} from "date-fns/locale";
 
 
 //todo: add edit button to task
@@ -7,10 +8,8 @@ import css from "./style.css";
 //todo: add edit button to task folder
 
 
-
 function localStorageRefresh(folder) {
-    //localStorage.removeItem(folder);
-    localStorage.setItem(folder.getName(),JSON.stringify(folder));
+    localStorage.setItem(folder.getName(), JSON.stringify(folder));
     console.log("refreshed")
 
 }
@@ -18,6 +17,7 @@ function localStorageRefresh(folder) {
 function UniqueIdToLocalStore(uniqueId) {
     localStorage.setItem('uniqueId', JSON.stringify(uniqueId));
 }
+
 document.addEventListener('click', e => {
 
     const isDropdownButton = e.target.matches("[data-dropdown-button]");
@@ -46,6 +46,7 @@ document.addEventListener('click', e => {
 function saveToLocalStorage() {
 
 }
+
 function storageAvailable(type) {
     let storage;
     try {
@@ -55,24 +56,15 @@ function storageAvailable(type) {
         storage.removeItem(x);
         return true;
     } catch (e) {
-        return (
-            e instanceof DOMException &&
-            // everything except Firefox
-            (e.code === 22 ||
-                // Firefox
-                e.code === 1014 ||
-                // test name field too, because code might not be present
+        return (e instanceof DOMException && // everything except Firefox
+            (e.code === 22 || // Firefox
+                e.code === 1014 || // test name field too, because code might not be present
                 // everything except Firefox
-                e.name === "QuotaExceededError" ||
-                // Firefox
-                e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-            // acknowledge QuotaExceededError only if there's something already stored
-            storage &&
-            storage.length !== 0
-        );
+                e.name === "QuotaExceededError" || // Firefox
+                e.name === "NS_ERROR_DOM_QUOTA_REACHED") && // acknowledge QuotaExceededError only if there's something already stored
+            storage && storage.length !== 0);
     }
 }
-
 
 
 class DomController {
@@ -90,14 +82,15 @@ class DomController {
         createButton.innerText = '+ Add Task'
         createButton.classList.add('create-button')
         createButtonDiv.classList.add('create-buttonDiv')
+
         createButtonDiv.appendChild(createButton)
 
 
         taskDetailContainer.appendChild(createButtonDiv);
 
         createButton.addEventListener('click', () => {
-            domControl.clear(createButtonDiv);
-            createButtonDiv.appendChild(domControl.createInputPopUp());
+            this.clear(createButtonDiv);
+            createButtonDiv.appendChild(this.createInputPopUp());
         })
 
     }
@@ -119,6 +112,9 @@ class DomController {
         addButton.innerText = 'Add';
         cancelButton.innerText = 'Cancel'
 
+        popUpContainer.classList.add('pop-up-container');
+        popUpContainer.setAttribute('id', 'pop-up-container');
+
         taskDateContainer.appendChild(taskInput);
         taskDateContainer.appendChild(dateInput)
 
@@ -129,12 +125,18 @@ class DomController {
         popUpContainer.appendChild(buttonContainer)
 
         addButton.addEventListener('click', () => {
-            let newTask = new Task(uniqueId,taskInput.value, dateInput.value);
+            let newTask = new Task(uniqueId, taskInput.value, dateInput.value);
             mainTaskFolder.addTask(newTask);
             let createButtonDiv = document.querySelector('.create-buttonDiv');
             createButtonDiv.remove();
             this.addTaskToDom(taskInput.value, dateInput.value);
             this.createAddTaskButton();
+        })
+
+        cancelButton.addEventListener("click", () => {
+            let createButtonDiv = document.querySelector('.create-buttonDiv');
+            createButtonDiv.remove();
+            this.createAddTaskButton()
         })
         return popUpContainer;
     }
@@ -148,8 +150,9 @@ class DomController {
         taskContainerContent.appendChild(taskFolderListContainer);
 
     }
-    addPreviousTasksToDom(existingID,taskText,taskDateInfo) {
-         let taskDetailContainer = document.querySelector('.task-detail-container');
+
+    addPreviousTasksToDom(existingID, taskText, taskDateInfo) {
+        let taskDetailContainer = document.querySelector('.task-detail-container');
         let task = document.createElement('div');
         let checkBoxContainer = document.createElement('div');
         let checkBox = document.createElement('input');
@@ -165,7 +168,7 @@ class DomController {
         taskInfo.classList.add('task-info')
         taskInfo.innerText = taskText;
 
-          checkBox.type = 'checkbox'
+        checkBox.type = 'checkbox'
 
         checkBox.addEventListener('click', () => {
             if (checkBox.checked) {
@@ -176,11 +179,10 @@ class DomController {
             }
 
 
+        })
 
-    })
 
-
-     checkBoxContainer.appendChild(checkBox);
+        checkBoxContainer.appendChild(checkBox);
         checkBoxContainer.appendChild(taskInfo);
         task.appendChild(checkBoxContainer);
         task.appendChild(taskDate);
@@ -190,7 +192,9 @@ class DomController {
 
         taskDetailContainer.appendChild(task);
 
-        console.log("it RAN!")}
+        console.log("it RAN!")
+    }
+
     addTaskToDom(taskText, taskDateInfo) {
         let taskDetailContainer = document.querySelector('.task-detail-container');
         let task = document.createElement('div');
@@ -200,7 +204,7 @@ class DomController {
         let taskDate = document.createElement('input');
 
         task.setAttribute('id', uniqueId)
-        uniqueId+=1;
+        uniqueId += 1;
         UniqueIdToLocalStore(uniqueId);
         taskDate.type = 'date';
         taskDate.value = taskDateInfo;
@@ -287,7 +291,7 @@ class TaskFolder {
         return this._taskList;
     }
 
-    setTaskList(taskList){
+    setTaskList(taskList) {
         this._taskList = taskList;
     }
 
@@ -302,50 +306,47 @@ class TaskFolder {
     addTask(Task) {
         this._taskList.push(Task);
         console.log(`${Task.getName()} added to ${this.getName()} folder`)
-          console.log(mainTaskFolder.getTaskList());
+        console.log(mainTaskFolder.getTaskList());
         localStorageRefresh(mainTaskFolder);
     }
 
 
-    removeTask(taskId,taskFolder) {
+    removeTask(taskId, taskFolder) {
 
-        if(taskFolder.taskExists(taskId,taskFolder)){
+        if (taskFolder.taskExists(taskId, taskFolder)) {
             taskFolder._taskList.splice(taskFolder._taskList.findIndex(task => task.getName().toString() === taskId), 1);
             console.log(`${taskId} removed from ${taskFolder.getName()} folder`);
             console.log(taskFolder.getTaskList());
             localStorageRefresh(mainTaskFolder);
 
-        }
-        else{
+        } else {
             console.log("Task doesn't exist")
         }
 
+    }
+
+    setTaskClass() {
+        for (let i = 0; i < this._taskList.length; i++) {
+            this._taskList[i] = new Task(this._taskList[i]._name, this._taskList[i]._description, this._taskList[i]._dueDate);
         }
-        setTaskClass(){
-            for (let i=0;i<this._taskList.length;i++){
-                this._taskList[i]=new Task(this._taskList[i]._name,this._taskList[i]._description,this._taskList[i]._dueDate);
-            }
-        }
+    }
 
 
+    taskExists(taskId, taskFolder) {
 
-
-    taskExists(taskId,taskFolder) {
-
-        let taskFolderList=taskFolder.getTaskList();
+        let taskFolderList = taskFolder.getTaskList();
         let doesExist;
 
 
-       for (let i=0;i<taskFolderList.length;i++){
-         if (taskId === taskFolderList[i].getName().toString()){
-             doesExist=true;
-             return doesExist;
-         }
-       }
+        for (let i = 0; i < taskFolderList.length; i++) {
+            if (taskId === taskFolderList[i].getName().toString()) {
+                doesExist = true;
+                return doesExist;
+            }
         }
+    }
 
 }
-
 
 
 const CREATE_TASK_BUTTON = document.querySelector('#create-task');
@@ -360,9 +361,6 @@ let mainTaskFolder = new TaskFolder('Main');
 let uniqueId = 0;
 
 
-
-
-
 let domControl = new DomController();
 
 
@@ -372,29 +370,25 @@ mytaskbutton.addEventListener('click', () => {
 })
 
 
-domControl.createAddTaskButton();
-
-
-
-
-if(localStorage.getItem('Main')!==null){
+if (localStorage.getItem('Main') !== null) {
 
     console.log("Local Storage Populated")
 
-    let tasklist=JSON.parse(localStorage.getItem('Main'))._taskList;
-    uniqueId=Number(localStorage.getItem('uniqueId'));
+    let tasklist = JSON.parse(localStorage.getItem('Main'))._taskList;
+    uniqueId = Number(localStorage.getItem('uniqueId'));
     mainTaskFolder.setTaskList(tasklist);
     mainTaskFolder.setTaskClass();
     console.log(mainTaskFolder.getTaskList())
 
 
-
-    for (let i=0;i<mainTaskFolder.getTaskList().length;i++){
-        domControl.addPreviousTasksToDom(mainTaskFolder.getTaskList()[i]['_name'],mainTaskFolder.getTaskList()[i]['_description'],mainTaskFolder.getTaskList()[i]['_dueDate'])
+    for (let i = 0; i < mainTaskFolder.getTaskList().length; i++) {
+        domControl.addPreviousTasksToDom(mainTaskFolder.getTaskList()[i]['_name'], mainTaskFolder.getTaskList()[i]['_description'], mainTaskFolder.getTaskList()[i]['_dueDate'])
         //console.log(mainTaskFolder.getTaskList()[i]['_description'])
     }
+    domControl.createAddTaskButton();
 
-}else
-
-{console.log("No tasks in local storage")
-console.log(mainTaskFolder.getTaskList())}
+} else {
+    console.log("No tasks in local storage")
+    domControl.createAddTaskButton();
+    console.log(mainTaskFolder.getTaskList())
+}
