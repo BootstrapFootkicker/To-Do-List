@@ -151,7 +151,8 @@ class DomController {
 
     }
 
-    addPreviousTasksToDom(existingID, taskText, taskDateInfo) {
+
+    addTaskToDom(taskText, taskDateInfo, taskID) {
         let taskDetailContainer = document.querySelector('.task-detail-container');
         let task = document.createElement('div');
         let checkBoxContainer = document.createElement('div');
@@ -159,53 +160,16 @@ class DomController {
         let taskInfo = document.createElement('div');
         let taskDate = document.createElement('input');
 
-        task.setAttribute('id', existingID)
-
-        taskDate.type = 'date';
-        taskDate.value = taskDateInfo;
-        task.classList.add('task')
-        checkBoxContainer.classList.add('checkbox-container')
-        taskInfo.classList.add('task-info')
-        taskInfo.innerText = taskText;
-
-        checkBox.type = 'checkbox'
-
-        checkBox.addEventListener('click', () => {
-            if (checkBox.checked) {
-                mainTaskFolder.removeTask(task.id, mainTaskFolder);
-                this.removeTaskFromDom(task.id)
+        taskID = taskID || uniqueId
+        if (taskID !== uniqueId) {
+            task.setAttribute('id', taskID)
+        } else {
+            task.setAttribute('id', uniqueId)
+            uniqueId += 1;
+            UniqueIdToLocalStore(uniqueId);
+        }
 
 
-            }
-
-
-        })
-
-
-        checkBoxContainer.appendChild(checkBox);
-        checkBoxContainer.appendChild(taskInfo);
-        task.appendChild(checkBoxContainer);
-        task.appendChild(taskDate);
-
-
-        taskDetailContainer.setAttribute('id', taskInfo + 'div')
-
-        taskDetailContainer.appendChild(task);
-
-        console.log("it RAN!")
-    }
-
-    addTaskToDom(taskText, taskDateInfo) {
-        let taskDetailContainer = document.querySelector('.task-detail-container');
-        let task = document.createElement('div');
-        let checkBoxContainer = document.createElement('div');
-        let checkBox = document.createElement('input');
-        let taskInfo = document.createElement('div');
-        let taskDate = document.createElement('input');
-
-        task.setAttribute('id', uniqueId)
-        uniqueId += 1;
-        UniqueIdToLocalStore(uniqueId);
         taskDate.type = 'date';
         taskDate.value = taskDateInfo;
         task.classList.add('task')
@@ -382,8 +346,7 @@ if (localStorage.getItem('Main') !== null) {
 
 
     for (let i = 0; i < mainTaskFolder.getTaskList().length; i++) {
-        domControl.addPreviousTasksToDom(mainTaskFolder.getTaskList()[i]['_name'], mainTaskFolder.getTaskList()[i]['_description'], mainTaskFolder.getTaskList()[i]['_dueDate'])
-        //console.log(mainTaskFolder.getTaskList()[i]['_description'])
+        domControl.addTaskToDom(mainTaskFolder.getTaskList()[i]['_description'], mainTaskFolder.getTaskList()[i]['_dueDate'], mainTaskFolder.getTaskList()[i]['_name'])
     }
     domControl.createAddTaskButton();
 
