@@ -75,8 +75,23 @@ class DomController {
         }
     }
 
+    createAddTaskFolderButton() {
+        const buttonList = document.querySelector('.button-list-content');
+
+        let createTaskFolderButton = document.createElement('button');
+        createTaskFolderButton.innerText = '+ Add Task Folder'
+        createTaskFolderButton.classList.add('create-button')
+        createTaskFolderButton.setAttribute('id', 'create-task-folder-button')
+        buttonList.appendChild(createTaskFolderButton);
+
+        createTaskFolderButton.addEventListener('click', () => {
+            createTaskFolderButton.remove();
+            buttonList.appendChild(this.createTaskFolderInputPopUp());
+        })
+    }
+
     createAddTaskButton() {
-        let taskDetailContainer = document.querySelector('.task-detail-container');
+        const taskDetailContainer = document.querySelector('.task-detail-container');
         let createButtonDiv = document.createElement('div'); //remove this
         let createButton = document.createElement('button');
         createButton.innerText = '+ Add Task'
@@ -90,13 +105,32 @@ class DomController {
 
         createButton.addEventListener('click', () => {
             this.clear(createButtonDiv);
-            createButtonDiv.appendChild(this.createInputPopUp());
+            createButtonDiv.appendChild(this.createTaskInputPopUp());
         })
 
     }
 
 
-    createInputPopUp() {
+    createTaskFolderInputPopUp() {
+        let inputDiv = document.createElement('div');
+        let input = document.createElement('input');
+        let addButton = document.createElement('button');
+
+        addButton.innerText = 'Add';
+
+        inputDiv.appendChild(input);
+        inputDiv.appendChild(addButton);
+
+        addButton.addEventListener('click', () => {
+            inputDiv.remove();
+            let newTaskFolder = new TaskFolder(input.value);
+            let newTaskFolderButton = this.createTaskFolderButton(newTaskFolder);
+        })
+        return inputDiv
+
+    }
+
+    createTaskInputPopUp() {
 
 
         let popUpContainer = document.createElement('div');
@@ -239,7 +273,17 @@ class DomController {
     }
 
 
+    createTaskFolderButton(newTaskFolder) {
+        const buttonListContent = document.querySelector('.button-list-content');
+        let taskFolderButton = document.createElement('button');
+        taskFolderButton.innerText = newTaskFolder.getName();
+        taskFolderButton.addEventListener('click', () => {
+            this.populateDomFromLocalStorage(newTaskFolder.getName());
+        })
+        buttonListContent.appendChild(taskFolderButton);
+    }
 }
+
 
 class Task {
     //let user create name so it's easy to find task fo modify
@@ -366,6 +410,8 @@ let uniqueId = 0;
 let domControl = new DomController();
 
 domControl.populateDomFromLocalStorage('Main');
+
+domControl.createAddTaskFolderButton()
 
 
 
