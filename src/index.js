@@ -126,7 +126,7 @@ class DomController {
 
         addButton.addEventListener('click', () => {
             let newTask = new Task(uniqueId, taskInput.value, dateInput.value);
-            mainTaskFolder.addTask(newTask);
+            taskFolder.addTask(newTask);
             let createButtonDiv = document.querySelector('.create-buttonDiv');
             createButtonDiv.remove();
             this.addTaskToDom(taskInput.value, dateInput.value);
@@ -139,16 +139,6 @@ class DomController {
             this.createAddTaskButton()
         })
         return popUpContainer;
-    }
-
-    addTaskFolderToDom(TaskFolder) {
-        let taskContainerContent = document.querySelector(".tasks-container-content");
-        let taskFolder = document.createElement('button')
-        let taskFolderListContainer = document.createElement('li')
-        taskFolder.innerText = TaskFolder.getName();
-        taskFolderListContainer.appendChild(taskFolder)
-        taskContainerContent.appendChild(taskFolderListContainer);
-
     }
 
 
@@ -182,7 +172,7 @@ class DomController {
 
         checkBox.addEventListener('click', () => {
             if (checkBox.checked) {
-                mainTaskFolder.removeTask(task.id, mainTaskFolder);
+                taskFolder.removeTask(task.id, taskFolder);
                 this.removeTaskFromDom(task.id)
 
 
@@ -211,6 +201,41 @@ class DomController {
         task.remove();
 
 
+    }
+
+    populateDomFromLocalStorage(key) {
+        if (localStorage.getItem(key) !== null) {
+
+            console.log("Local Storage Populated")
+
+            let tasklist = JSON.parse(localStorage.getItem(key))._taskList;
+            uniqueId = Number(localStorage.getItem('uniqueId'));
+            taskFolder.setTaskList(tasklist);
+            taskFolder.setTaskClass();
+            let taskIDS = taskFolder.getTaskIDS();
+            console.log(taskFolder.getTaskList())
+
+
+            for (let i = 0; i < taskFolder.getTaskList().length; i++) {
+                if (document.querySelector("#" + CSS.escape(taskIDS[i])) === null)
+                    this.addTaskToDom(taskFolder.getTaskList()[i]['_description'], taskFolder.getTaskList()[i]['_dueDate'], taskFolder.getTaskList()[i]['_name'])
+
+                else {
+
+                    console.log(`Div ${taskIDS[i]} is Already in DOM`)
+                }
+
+
+            }
+            if (document.querySelector('.create-buttonDiv') === null) {
+                this.createAddTaskButton();
+            }
+
+        } else {
+            console.log("No tasks in local storage")
+            this.createAddTaskButton();
+            console.log(taskFolder.getTaskList())
+        }
     }
 
 
@@ -270,8 +295,8 @@ class TaskFolder {
     addTask(Task) {
         this._taskList.push(Task);
         console.log(`${Task.getName()} added to ${this.getName()} folder`)
-        console.log(mainTaskFolder.getTaskList());
-        localStorageRefresh(mainTaskFolder);
+        console.log(taskFolder.getTaskList());
+        localStorageRefresh(taskFolder);
     }
 
 
@@ -281,7 +306,7 @@ class TaskFolder {
             taskFolder._taskList.splice(taskFolder._taskList.findIndex(task => task.getName().toString() === taskId), 1);
             console.log(`${taskId} removed from ${taskFolder.getName()} folder`);
             console.log(taskFolder.getTaskList());
-            localStorageRefresh(mainTaskFolder);
+            localStorageRefresh(taskFolder);
 
         } else {
             console.log("Task doesn't exist")
@@ -310,6 +335,14 @@ class TaskFolder {
         }
     }
 
+    getTaskIDS() {
+        let taskIDS = [];
+        for (let i = 0; i < this._taskList.length; i++) {
+            taskIDS.push(this._taskList[i].getName());
+        }
+        return taskIDS;
+    }
+
 }
 
 
@@ -317,41 +350,24 @@ const CREATE_TASK_BUTTON = document.querySelector('#create-task');
 const mytaskbutton = document.querySelector('.taskfolder-button');
 const addTaskButton = document.querySelector('#add-task');
 const createButtonDiv = document.querySelector('.create-buttonDiv')
+const mainFolderButton = document.querySelector('#Main-folder-button');
 
 //Global Variables
-let folderOption = 'My Tasks';
-let mainTaskFolder = new TaskFolder('Main');
+
+let taskFolder = new TaskFolder('Main');
+
+mainFolderButton.addEventListener('click', () => {
+    domControl.populateDomFromLocalStorage('Main');
+})
 //Used to label tasks with unique id (both in dom and in taskFolder)
 let uniqueId = 0;
 
 
 let domControl = new DomController();
 
-
-mytaskbutton.addEventListener('click', () => {
-    folderOption = mytaskbutton.innerText
-    console.log(folderOption)
-})
+domControl.populateDomFromLocalStorage('Main');
 
 
-if (localStorage.getItem('Main') !== null) {
-
-    console.log("Local Storage Populated")
-
-    let tasklist = JSON.parse(localStorage.getItem('Main'))._taskList;
-    uniqueId = Number(localStorage.getItem('uniqueId'));
-    mainTaskFolder.setTaskList(tasklist);
-    mainTaskFolder.setTaskClass();
-    console.log(mainTaskFolder.getTaskList())
 
 
-    for (let i = 0; i < mainTaskFolder.getTaskList().length; i++) {
-        domControl.addTaskToDom(mainTaskFolder.getTaskList()[i]['_description'], mainTaskFolder.getTaskList()[i]['_dueDate'], mainTaskFolder.getTaskList()[i]['_name'])
-    }
-    domControl.createAddTaskButton();
 
-} else {
-    console.log("No tasks in local storage")
-    domControl.createAddTaskButton();
-    console.log(mainTaskFolder.getTaskList())
-}
