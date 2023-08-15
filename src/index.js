@@ -8,8 +8,8 @@ import {th} from "date-fns/locale";
 //todo: add edit button to task folder
 
 
-function localStorageRefresh(folder) {
-    localStorage.setItem(folder.getName(), JSON.stringify(folder));
+function localStorageRefresh(item) {
+    localStorage.setItem(item.getName(), JSON.stringify(item));
     console.log("refreshed")
 
 }
@@ -86,7 +86,7 @@ class DomController {
 
         createTaskFolderButton.addEventListener('click', () => {
             createTaskFolderButton.remove();
-            buttonList.appendChild(this.createTaskFolderInputPopUp());
+            buttonList.appendChild(this.createTaskFolderButtonInputPopUp());
         })
     }
 
@@ -111,7 +111,7 @@ class DomController {
     }
 
 
-    createTaskFolderInputPopUp() {
+    createTaskFolderButtonInputPopUp() {
         let inputDiv = document.createElement('div');
         let input = document.createElement('input');
         let addButton = document.createElement('button');
@@ -124,6 +124,8 @@ class DomController {
         addButton.addEventListener('click', () => {
             inputDiv.remove();
             let newTaskFolder = new TaskFolder(input.value);
+            TaskFolderContainer.addTaskFolder(newTaskFolder);
+            localStorageRefresh(TaskFolderContainer);
             let newTaskFolderButton = this.createTaskFolderButton(newTaskFolder);
         })
         return inputDiv
@@ -176,7 +178,8 @@ class DomController {
     }
 
 
-    addTaskToDom(taskText, taskDateInfo, taskID) {
+    addTaskToDom(taskText, taskDateInfo, taskID = uniqueId) {
+
         let taskDetailContainer = document.querySelector('.task-detail-container');
         let task = document.createElement('div');
         let checkBoxContainer = document.createElement('div');
@@ -184,7 +187,8 @@ class DomController {
         let taskInfo = document.createElement('div');
         let taskDate = document.createElement('input');
 
-        taskID = taskID || uniqueId
+        //taskID = taskID || uniqueId
+        console.log(taskID)
         if (taskID !== uniqueId) {
             task.setAttribute('id', taskID)
         } else {
@@ -251,10 +255,10 @@ class DomController {
 
 
             for (let i = 0; i < CurrentTaskFolder.getTaskList().length; i++) {
-                if (document.querySelector("#" + CSS.escape(taskIDS[i])) === null)
+                if (document.querySelector("#" + CSS.escape(taskIDS[i])) === null) {
+                    console.log(CurrentTaskFolder.getTaskList()[i]['_name'])
                     this.addTaskToDom(CurrentTaskFolder.getTaskList()[i]['_description'], CurrentTaskFolder.getTaskList()[i]['_dueDate'], CurrentTaskFolder.getTaskList()[i]['_name'])
-
-                else {
+                } else {
 
                     console.log(`Div ${taskIDS[i]} is Already in DOM`)
                 }
@@ -266,7 +270,7 @@ class DomController {
             }
 
         } else /*else if additional folder check*/ {
-            console.log(document.querySelector('.create-buttonDiv'))
+
             console.log("No tasks in local storage")
             //this.createAddTaskButton();
             console.log(CurrentTaskFolder.getTaskList())
@@ -338,6 +342,40 @@ class TaskfolderContainer {
         }
     }
 
+    taskFolderExists(taskFolderName) {
+        for (let i = 0; i < this._taskFolderList.length; i++) {
+            if (this._taskFolderList[i].getName() === taskFolderName) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    addTaskFolder(taskFolderName) {
+        if (this.taskFolderExists(taskFolderName)) {
+            console.log("Task Folder Already Exists");
+        } else {
+            this._taskFolderList.push(taskFolderName);
+            localStorageRefresh(TaskFolderContainer);
+            console.log(`${taskFolderName} added to ${this.getName()} container`);
+        }
+    }
+
+    removeTaskFolder(taskFolderName) {
+        if (this.taskFolderExists(taskFolderName)) {
+            for (let i = 0; i < this._taskFolderList.length; i++) {
+                if (this._taskFolderList[i].getName() === taskFolderName) {
+                    this._taskFolderList.splice(i, 1);
+                    localStorageRefresh(TaskFolderContainer);
+                    console.log(`${taskFolderName} removed from ${this.getName()} container`);
+                }
+            }
+        } else {
+            console.log("Task Folder does not exist");
+        }
+    }
+
+
     toString() {
         for (let i = 0; i < this._taskFolderList.length; i++) {
             console.log(this._taskFolderList[i].getName());
@@ -376,10 +414,20 @@ class TaskFolder {
 
     //helpers
     addTask(Task) {
-        this._taskList.push(Task);
-        console.log(`${Task.getName()} added to ${this.getName()} folder`)
-        console.log(CurrentTaskFolder.getTaskList());
-        localStorageRefresh(CurrentTaskFolder);
+        if (this.taskExists(Task.getName(), this)) {
+            console.log("Task already exists");
+            return;
+        } else {
+            this._taskList.push(Task);
+            console.log(`${Task.getName()} added to ${this.getName()} folder`)
+            console.log(CurrentTaskFolder.getTaskList());
+            if (CurrentTaskFolder.getName() === "Main") {
+                localStorageRefresh(CurrentTaskFolder);
+            } else {
+                localStorageRefresh(TaskFolderContainer);
+            }
+
+        }
     }
 
 
@@ -389,7 +437,11 @@ class TaskFolder {
             taskFolder._taskList.splice(taskFolder._taskList.findIndex(task => task.getName().toString() === taskId), 1);
             console.log(`${taskId} removed from ${taskFolder.getName()} folder`);
             console.log(taskFolder.getTaskList());
-            localStorageRefresh(taskFolder);
+            if (CurrentTaskFolder.getName() === "Main") {
+                localStorageRefresh(CurrentTaskFolder);
+            } else {
+                localStorageRefresh(TaskFolderContainer);
+            }
 
         } else {
             console.log("Task doesn't exist")
