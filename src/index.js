@@ -1,6 +1,6 @@
 import {compareAsc, format} from 'date-fns'
 import css from "./style.css";
-import {th} from "date-fns/locale";
+import {te, th} from "date-fns/locale";
 
 
 //todo: add edit button to task
@@ -244,44 +244,56 @@ class DomController {
 
     }
 
-    // populateDomFromLocalStorage(key) {
-    //     if (localStorage.getItem(key) !== null) {
-    //
-    //         console.log("Local Storage Populated")
-    //
-    //         let tasklist = JSON.parse(localStorage.getItem(key))._taskList;
-    //         uniqueId = Number(localStorage.getItem('uniqueId'));
-    //         CurrentTaskFolder.setTaskList(tasklist);
-    //         CurrentTaskFolder.setTaskClass();
-    //         let taskIDS = CurrentTaskFolder.getTaskIDS();
-    //         console.log(CurrentTaskFolder.getTaskList())
-    //
-    //
-    //         for (let i = 0; i < CurrentTaskFolder.getTaskList().length; i++) {
-    //             if (document.querySelector("#" + CSS.escape(taskIDS[i])) === null) {
-    //                 console.log(CurrentTaskFolder.getTaskList()[i]['_name'])
-    //                 this.addTaskToDom(CurrentTaskFolder.getTaskList()[i]['_description'], CurrentTaskFolder.getTaskList()[i]['_dueDate'], CurrentTaskFolder.getTaskList()[i]['_name'])
-    //             } else {
-    //
-    //                 console.log(`Div ${taskIDS[i]} is Already in DOM`)
-    //             }
-    //
-    //
-    //         }
-    //         if (document.querySelector('.create-buttonDiv') === null) {
-    //             this.createAddTaskButton();
-    //         }
-    //
-    //     } else /*else if additional folder check*/ {
-    //
-    //         console.log("No tasks in local storage")
-    //         //this.createAddTaskButton();
-    //         console.log(CurrentTaskFolder.getTaskList())
-    //     }
-    //     if (document.querySelector('.create-buttonDiv') === null) {
-    //         this.createAddTaskButton();
-    //     }
-    // }
+    populateDomFromLocalStorage(key) {
+        let tasklist = []
+        let taskIDS = []
+        let taskFolderIndex = 0
+        if (localStorage.getItem("TaskFolderContainer") !== null) {
+
+            console.log("Local Storage Populated")
+            let tempTaskFolderContainer = JSON.parse(localStorage.getItem('TaskFolderContainer'))._taskFolderList;
+            MainTaskFolderContainer.setTaskFolderList(tempTaskFolderContainer);
+            MainTaskFolderContainer.setTaskFolderClass();
+            console.log(MainTaskFolderContainer.getTaskFolderList())
+
+            for (let i = 0; i < MainTaskFolderContainer.getTaskFolderList().length; i++) {
+                MainTaskFolderContainer.getTaskFolderList()[i].setTaskClass()
+            }
+
+            tasklist = MainTaskFolderContainer.getTaskFolder(key).getTaskList();
+
+            taskFolderIndex = MainTaskFolderContainer.getTaskFolderIndex(key)
+            taskIDS = MainTaskFolderContainer.getTaskFolderList()[taskFolderIndex].getTaskIDS()
+
+            uniqueId = Number(localStorage.getItem('uniqueId'));
+
+            for (let i = 0; i < tasklist.length; i++) {
+
+                if (document.querySelector("#" + CSS.escape(taskIDS[i])) === null) {
+                    console.log(tasklist[i].getName())
+                    this.addTaskToDom(tasklist[i].getDescription(), tasklist[i].getDueDate(), tasklist[i].getName())
+                } else {
+
+                    console.log(`Div ${taskIDS[i]} is Already in DOM`)
+                }
+
+
+            }
+            if (document.querySelector('.create-buttonDiv') === null) {
+
+                this.createAddTaskButton();
+            }
+
+        } else /*else if additional folder check*/ {
+
+            console.log("No tasks in local storage")
+            //this.createAddTaskButton();
+
+        }
+        if (document.querySelector('.create-buttonDiv') === null) {
+            this.createAddTaskButton();
+        }
+    }
 
 
     createTaskFolderButton(newTaskFolder) {
@@ -321,9 +333,8 @@ class Task {
 
 class TaskFolderContainer {
     constructor(name) {
-        let MainTaskFolder = new TaskFolder('Main')
         this.name = name;
-        this._taskFolderList = [MainTaskFolder]
+        this._taskFolderList = []
     }
 
     //Getters
@@ -336,13 +347,15 @@ class TaskFolderContainer {
     }
 
     setTaskFolderList(taskFolderList) {
-        this._taskFolderList = taskFolderList;
+        this._taskFolderList = [...taskFolderList];
     }
 
     setTaskFolderClass() {
+        //removes all values from array
         for (let i = 0; i < this._taskFolderList.length; i++) {
-            this._taskFolderList[i] = new TaskFolder(this._taskFolderList[i]);
+            this._taskFolderList[i] = new TaskFolder(this._taskFolderList[i]._name, this._taskFolderList[i]._taskList);
             console.log(this._taskFolderList[i].getName());
+
         }
     }
 
@@ -391,6 +404,18 @@ class TaskFolderContainer {
         }
     }
 
+    getTaskFolderIndex(taskFolderName) {
+        if (this.taskFolderExists(taskFolderName)) {
+            for (let i = 0; i < this._taskFolderList.length; i++) {
+                if (this._taskFolderList[i].getName() === taskFolderName) {
+                    return i;
+                }
+            }
+        } else {
+            console.log("Task Folder does not exist");
+        }
+    }
+
 
     toString() {
         for (let i = 0; i < this._taskFolderList.length; i++) {
@@ -403,9 +428,13 @@ class TaskFolderContainer {
 }
 
 class TaskFolder {
-    constructor(name) {
+    constructor(name, tasklist) {
         this._name = name;
-        this._taskList = []
+        if (tasklist !== null) {
+            this._taskList = tasklist;
+        } else {
+            this._taskList = []
+        }
     }
 
     //Getters
@@ -501,7 +530,7 @@ let MainTaskFolderContainer = new TaskFolderContainer('TaskFolderContainer');
 
 //todo need to rewrite functions to pull folder from taskfolder container, not just main folder. Current task folder will be a global way to keep track of which folder is being used!
 mainFolderButton.addEventListener('click', () => {
-    //domControl.populateDomFromLocalStorage('Main');
+    domControl.populateDomFromLocalStorage('Main');
 })
 //Used to label tasks with unique id (both in dom and in taskFolder)
 let uniqueId = 0;
@@ -509,10 +538,10 @@ let uniqueId = 0;
 
 let domControl = new DomController();
 
-//domControl.populateDomFromLocalStorage('Main');
+domControl.populateDomFromLocalStorage('Main');
 
 domControl.createAddTaskFolderButton()
-domControl.createAddTaskButton()
+
 
 
 
