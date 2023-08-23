@@ -127,6 +127,11 @@ class DomController {
             MainTaskFolderContainer.addTaskFolder(newTaskFolder);
             localStorageRefresh(MainTaskFolderContainer);
             this.createTaskFolderButton(newTaskFolder);
+            currentTaskFolder = newTaskFolder.getName();
+            let taskDetailContainer = document.querySelector('.task-detail-container');
+            this.clear(taskDetailContainer);
+            this.createAddTaskButton()
+
 
         })
         return inputDiv
@@ -245,6 +250,17 @@ class DomController {
 
     }
 
+    PopulateFolderButtonsFromLocalStorage() {
+        let taskFolderList = MainTaskFolderContainer.getTaskFolderList();
+        for (let i = 1; i < taskFolderList.length; i++) {
+            if (document.querySelector('#' + CSS.escape(taskFolderList[i].getName())) === null) {
+                this.createTaskFolderButton(taskFolderList[i])
+            } else {
+                console.log(`${taskFolderList[i].getName()}button already exists`)
+            }
+        }
+    }
+
     populateDomFromLocalStorage(key) {
         let tasklist = []
         let taskIDS = []
@@ -284,6 +300,7 @@ class DomController {
 
                 this.createAddTaskButton();
             }
+            this.PopulateFolderButtonsFromLocalStorage();
 
         } else /*else if additional folder check*/ {
             let MainTaskFolder = new TaskFolder('Main', null);
@@ -302,10 +319,16 @@ class DomController {
         const buttonListContent = document.querySelector('.button-list-content');
         let taskFolderButton = document.createElement('button');
         taskFolderButton.innerText = newTaskFolder.getName();
+        taskFolderButton.setAttribute('id', newTaskFolder.getName());
         taskFolderButton.addEventListener('click', () => {
-            // this.populateDomFromLocalStorage(newTaskFolder.getName());
+            currentTaskFolder = newTaskFolder.getName();
+            console.log(`The current taskfolder has been changed to ${currentTaskFolder}`)
+            let taskDetailContainer = document.querySelector('.task-detail-container');
+            this.clear(taskDetailContainer)
+            this.populateDomFromLocalStorage(newTaskFolder.getName());
         })
         buttonListContent.appendChild(taskFolderButton);
+
     }
 }
 
@@ -532,6 +555,11 @@ let MainTaskFolderContainer = new TaskFolderContainer('TaskFolderContainer');
 
 //todo need to rewrite functions to pull folder from taskfolder container, not just main folder. Current task folder will be a global way to keep track of which folder is being used!
 mainFolderButton.addEventListener('click', () => {
+    currentTaskFolder = 'Main';
+    console.log(`The current taskfolder has been changed to ${currentTaskFolder}`)
+    let taskDetailContainer = document.querySelector('.task-detail-container');
+    console.log(taskDetailContainer.className)
+    domControl.clear(taskDetailContainer)
     domControl.populateDomFromLocalStorage('Main');
 })
 //Used to label tasks with unique id (both in dom and in taskFolder)
