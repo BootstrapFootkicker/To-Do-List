@@ -123,10 +123,11 @@ class DomController {
 
         addButton.addEventListener('click', () => {
             inputDiv.remove();
-            let newTaskFolder = new TaskFolder(input.value);
+            let newTaskFolder = new TaskFolder(input.value, null);
             MainTaskFolderContainer.addTaskFolder(newTaskFolder);
             localStorageRefresh(MainTaskFolderContainer);
-            let newTaskFolderButton = this.createTaskFolderButton(newTaskFolder);
+            this.createTaskFolderButton(newTaskFolder);
+
         })
         return inputDiv
 
@@ -285,7 +286,8 @@ class DomController {
             }
 
         } else /*else if additional folder check*/ {
-
+            let MainTaskFolder = new TaskFolder('Main', null);
+            MainTaskFolderContainer.addTaskFolder(MainTaskFolder);
             console.log("No tasks in local storage")
             //this.createAddTaskButton();
 
@@ -374,7 +376,7 @@ class TaskFolderContainer {
         } else {
             this._taskFolderList.push(taskFolderName);
             localStorageRefresh(MainTaskFolderContainer);
-            console.log(`${taskFolderName} added to ${this.getName()} container`);
+            console.log(`${taskFolderName.toString()} added to ${this.getName()} container`);
         }
     }
 
