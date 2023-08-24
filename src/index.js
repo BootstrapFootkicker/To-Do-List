@@ -3,11 +3,6 @@ import css from "./style.css";
 import {te, th} from "date-fns/locale";
 
 
-//todo: add edit button to task
-
-//todo: add edit button to task folder
-
-
 function localStorageRefresh(item) {
     localStorage.setItem(item.getName(), JSON.stringify(item));
     console.log("refreshed")
@@ -43,10 +38,7 @@ document.addEventListener('click', e => {
 })
 
 
-function saveToLocalStorage() {
-
-}
-
+//testing if browser supports local storage
 function storageAvailable(type) {
     let storage;
     try {
@@ -87,6 +79,10 @@ class DomController {
         createTaskFolderButton.addEventListener('click', () => {
             createTaskFolderButton.remove();
             buttonList.appendChild(this.createTaskFolderButtonInputPopUp());
+            let addTaskFolderButtonSelector = document.querySelector('#create-task-folder-button');
+            if (addTaskFolderButtonSelector === null) {
+                this.createAddTaskFolderButton();
+            }
         })
     }
 
@@ -106,6 +102,7 @@ class DomController {
         createButton.addEventListener('click', () => {
             this.clear(createButtonDiv);
             createButtonDiv.appendChild(this.createTaskInputPopUp());
+
         })
 
     }
@@ -115,24 +112,39 @@ class DomController {
         let inputDiv = document.createElement('div');
         let input = document.createElement('input');
         let addButton = document.createElement('button');
+        let cancelButton = document.createElement('button');
+
 
         addButton.innerText = 'Add';
+        cancelButton.innerText = 'Cancel'
 
         inputDiv.appendChild(input);
         inputDiv.appendChild(addButton);
+        inputDiv.appendChild(cancelButton);
+        inputDiv.setAttribute('id', 'Taskfolder-button-input-div')
 
         addButton.addEventListener('click', () => {
-            inputDiv.remove();
-            let newTaskFolder = new TaskFolder(input.value, null);
-            MainTaskFolderContainer.addTaskFolder(newTaskFolder);
-            localStorageRefresh(MainTaskFolderContainer);
-            this.createTaskFolderButton(newTaskFolder);
-            currentTaskFolder = newTaskFolder.getName();
-            let taskDetailContainer = document.querySelector('.task-detail-container');
-            this.clear(taskDetailContainer);
-            this.createAddTaskButton()
+            if (input.value === '' || MainTaskFolderContainer.taskFolderExists(input.value) === true) {
+                //Todo: add error message and CSS to show error
+                return
+            } else {
+                inputDiv.remove();
+                let newTaskFolder = new TaskFolder(input.value, null);
+                MainTaskFolderContainer.addTaskFolder(newTaskFolder);
+                localStorageRefresh(MainTaskFolderContainer);
+                this.createTaskFolderButton(newTaskFolder);
+                currentTaskFolder = newTaskFolder.getName();
+                let taskDetailContainer = document.querySelector('.task-detail-container');
+                this.clear(taskDetailContainer);
+                this.createAddTaskButton()
+            }
 
+        })
 
+        cancelButton.addEventListener('click', () => {
+            let inputDivSelector = document.querySelector('#Taskfolder-button-input-div');
+            inputDivSelector.remove();
+            this.createAddTaskFolderButton();
         })
         return inputDiv
 
@@ -149,13 +161,16 @@ class DomController {
         let addButton = document.createElement('button')
         let cancelButton = document.createElement('button');
 
+        dateInput.setAttribute('id', 'date-input')
 
         dateInput.type = 'date';
         addButton.innerText = 'Add';
         cancelButton.innerText = 'Cancel'
 
+
         popUpContainer.classList.add('pop-up-container');
         popUpContainer.setAttribute('id', 'pop-up-container');
+
 
         taskDateContainer.appendChild(taskInput);
         taskDateContainer.appendChild(dateInput)
@@ -167,14 +182,22 @@ class DomController {
         popUpContainer.appendChild(buttonContainer)
 
         addButton.addEventListener('click', () => {
-            let newTask = new Task(uniqueId, taskInput.value, dateInput.value);
-            MainTaskFolderContainer.getTaskFolder(currentTaskFolder).addTask(newTask);
-            let createButtonDiv = document.querySelector('.create-buttonDiv');
-            createButtonDiv.remove();
-            this.addTaskToDom(taskInput.value, dateInput.value);
-            this.createAddTaskButton();
-            localStorageRefresh(MainTaskFolderContainer);
 
+            if (taskInput.value === '' || dateInput.value === '') {
+                //Todo: add error message and CSS to show error
+                return
+            } else {
+
+                let newTask = new Task(uniqueId, taskInput.value, dateInput.value);
+                MainTaskFolderContainer.getTaskFolder(currentTaskFolder).addTask(newTask);
+                let createButtonDiv = document.querySelector('.create-buttonDiv');
+                createButtonDiv.remove();
+                this.addTaskToDom(taskInput.value, dateInput.value);
+                this.createAddTaskButton();
+                localStorageRefresh(MainTaskFolderContainer);
+
+
+            }
         })
 
         cancelButton.addEventListener("click", () => {
@@ -194,6 +217,8 @@ class DomController {
         let checkBox = document.createElement('input');
         let taskInfo = document.createElement('div');
         let taskDate = document.createElement('input');
+        let editButton = document.createElement('button');
+
 
         //taskID = taskID || uniqueId
         console.log(taskID)
@@ -208,6 +233,8 @@ class DomController {
 
         taskDate.type = 'date';
         taskDate.value = taskDateInfo;
+        taskDate.setAttribute('id', taskID + 'task-date')
+        taskDate.disabled = true;
         task.classList.add('task')
         checkBoxContainer.classList.add('checkbox-container')
         taskInfo.classList.add('task-info')
@@ -215,6 +242,8 @@ class DomController {
 
 
         checkBox.type = 'checkbox'
+
+        editButton.innerText = 'Edit'
 
         checkBox.addEventListener('click', () => {
             if (checkBox.checked) {
@@ -228,9 +257,27 @@ class DomController {
 
         })
 
+        editButton.addEventListener('click', () => {
+            taskDate.disabled = false;
+            taskInfo.contentEditable = true;
+            editButton.innerText = 'Save';
+            editButton.addEventListener('click', () => {
+                taskDate.disabled = true;
+                taskInfo.contentEditable = false;
+                editButton.innerText = 'Edit';
+                MainTaskFolderContainer.getTaskFolder(currentTaskFolder).getTask(task.id).setDesciption(taskInfo.innerText);
+                MainTaskFolderContainer.getTaskFolder(currentTaskFolder).getTask(task.id).setDueDate(taskDate.value);
+
+                localStorageRefresh(MainTaskFolderContainer);
+            })
+
+        })
+
         checkBoxContainer.appendChild(checkBox);
+        task.appendChild(editButton);
         checkBoxContainer.appendChild(taskInfo);
         task.appendChild(checkBoxContainer);
+
         task.appendChild(taskDate);
 
 
@@ -352,6 +399,14 @@ class Task {
 
     getDueDate() {
         return this._dueDate;
+    }
+
+    setDesciption(description) {
+        this._description = description;
+    }
+
+    setDueDate(dueDate) {
+        this._dueDate = dueDate;
     }
 
 }
@@ -484,7 +539,7 @@ class TaskFolder {
 
     //helpers
     addTask(Task) {
-        if (this.taskExists(Task.getName(), this)) {
+        if (this.taskExists(Task.getName())) {
             console.log("Task already exists");
             return;
         } else {
@@ -496,12 +551,12 @@ class TaskFolder {
     }
 
 
-    removeTask(taskId, taskFolder) {
+    removeTask(taskId) {
 
-        if (taskFolder.taskExists(taskId, taskFolder)) {
-            taskFolder._taskList.splice(taskFolder._taskList.findIndex(task => task.getName().toString() === taskId), 1);
-            console.log(`${taskId} removed from ${taskFolder.getName()} folder`);
-            console.log(taskFolder.getTaskList());
+        if (this.taskExists(taskId)) {
+            this._taskList.splice(this._taskList.findIndex(task => task.getName().toString() === taskId), 1);
+            console.log(`${taskId} removed from ${this.getName()} folder`);
+            console.log(this.getTaskList());
 
         } else {
             console.log("Task doesn't exist")
@@ -516,9 +571,9 @@ class TaskFolder {
     }
 
 
-    taskExists(taskId, taskFolder) {
+    taskExists(taskId) {
 
-        let taskFolderList = taskFolder.getTaskList();
+        let taskFolderList = this.getTaskList();
         let doesExist;
 
 
@@ -528,6 +583,13 @@ class TaskFolder {
                 return doesExist;
             }
         }
+    }
+
+    getTask(taskId) {
+        if (this.taskExists(taskId) === true) {
+            return this._taskList[this._taskList.findIndex(task => task.getName().toString() === taskId)];
+        }
+
     }
 
     getTaskIDS() {
