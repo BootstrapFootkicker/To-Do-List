@@ -28,9 +28,9 @@ body {
 }
 
 .task-sidebar {
- min-width:10%;
+    min-width: 10%;
     border-right: black solid 2px;
-    padding: 20px;
+    padding: 10px;
 
 }
 
@@ -53,11 +53,12 @@ body {
 
 
 }
-.task-detail-container input{
+
+.task-detail-container input {
     width: 20.5rem;
 }
 
-.create-buttonDiv{
+.create-buttonDiv {
     display: flex;
     justify-content: center;
 }
@@ -77,12 +78,12 @@ body {
     border-radius: 20px;
 }
 
-ul{
+ul {
     list-style: none;
 }
 
 
-.dropdown{
+.dropdown {
     display: flex;
     position: relative;
 
@@ -90,18 +91,19 @@ ul{
 }
 
 
-.dropdown.active > .create-button+ .dropdown-menu{
+.dropdown.active > .create-button + .dropdown-menu {
     opacity: 1;
-    transform:translateY(0);
+    transform: translateY(0);
     pointer-events: auto;
 
 }
-.dropdown.active > .create-button, .create-button:hover{
+
+.dropdown.active > .create-button, .create-button:hover {
     color: black;
 }
 
-.dropdown-menu{
-    position:absolute;
+.dropdown-menu {
+    position: absolute;
     left: 0;
 
     /*top padding*/
@@ -109,7 +111,7 @@ ul{
     background-color: white;
     padding: .75rem;
     border-radius: .25rem;
-    box-shadow: 0 2px 5px 0 rgba(0,0,0,.1);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .1);
     opacity: 0;
     transform: translateY(-10px);
     transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
@@ -123,13 +125,140 @@ ul{
 }
 
 
-.create-button{
-    background:none;
-    border:none;
-    text-decoration:none;
+.create-button {
+    background: none;
+    border: none;
+    text-decoration: none;
     color: #777;
     font-size: inherit;
     font-family: inherit;
     cursor: pointer;
     padding: 0;
 }
+
+
+input:invalid {
+    background-color: #ffdddd;
+    outline: 2px solid red;
+    color: red;
+    border-radius: 5px;
+
+}
+
+.button-list-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.button-list-content button {
+    flex: 1;
+}
+
+.taskfolder-button {
+    padding: 15px 30px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    /*  border: none;*/
+    background-color: #fff;
+    font-size: 16px;
+    transition: 0.3s ease;
+}
+
+
+.taskfolder-button:hover {
+    background-color: #313744;
+    color: white;
+}
+
+#Taskfolder-button-input-div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#Taskfolder-button-input-div-button-container {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    flex: 1;
+    align-content: center;
+}
+
+#Taskfolder-button-input-div-button-container button {
+    flex: 1;
+}
+
+.tasks-container-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    padding: 0;
+}
+
+.pop-up-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+#task-date-container {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+#popup-button-container {
+
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.add-button, .cancel-button {
+    flex: 1;
+    appearance: none;
+    background-color: #2ea44f;
+    border: 1px solid rgba(27, 31, 35, .15);
+    border-radius: 6px;
+    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    padding: 6px 16px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    white-space: nowrap;
+
+}
+
+.add-button:hover {
+    background-color: #2c974b;
+}
+
+.cancel-button:hover {
+    background-color: #c00f0f;
+}
+
+.cancel-button {
+    background-color: #c41e3a;
+}
+
+

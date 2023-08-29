@@ -2,6 +2,9 @@ import {compareAsc, format} from 'date-fns'
 import css from "./style.css";
 import {te, th} from "date-fns/locale";
 
+//todo Add way to delete task folders
+//todo work on css
+//todo Fix bug where extra Addtaskfolder button is created before you add a task folder
 
 function localStorageRefresh(item) {
     localStorage.setItem(item.getName(), JSON.stringify(item));
@@ -79,10 +82,7 @@ class DomController {
         createTaskFolderButton.addEventListener('click', () => {
             createTaskFolderButton.remove();
             buttonList.appendChild(this.createTaskFolderButtonInputPopUp());
-            let addTaskFolderButtonSelector = document.querySelector('#create-task-folder-button');
-            if (addTaskFolderButtonSelector === null) {
-                this.createAddTaskFolderButton();
-            }
+
         })
     }
 
@@ -113,18 +113,25 @@ class DomController {
         let input = document.createElement('input');
         let addButton = document.createElement('button');
         let cancelButton = document.createElement('button');
-
+        let buttonContainer = document.createElement('div');
 
         addButton.innerText = 'Add';
         cancelButton.innerText = 'Cancel'
 
         inputDiv.appendChild(input);
-        inputDiv.appendChild(addButton);
-        inputDiv.appendChild(cancelButton);
+        buttonContainer.appendChild(addButton);
+        buttonContainer.appendChild(cancelButton);
+        inputDiv.appendChild(buttonContainer);
+
+        addButton.classList.add('add-button')
+        cancelButton.classList.add('cancel-button')
+
+        buttonContainer.setAttribute('id', 'Taskfolder-button-input-div-button-container')
         inputDiv.setAttribute('id', 'Taskfolder-button-input-div')
 
         addButton.addEventListener('click', () => {
             if (input.value === '' || MainTaskFolderContainer.taskFolderExists(input.value) === true) {
+
                 //Todo: add error message and CSS to show error
                 return
             } else {
@@ -137,6 +144,9 @@ class DomController {
                 let taskDetailContainer = document.querySelector('.task-detail-container');
                 this.clear(taskDetailContainer);
                 this.createAddTaskButton()
+
+                this.createAddTaskFolderButton();
+
             }
 
         })
@@ -162,10 +172,14 @@ class DomController {
         let cancelButton = document.createElement('button');
 
         dateInput.setAttribute('id', 'date-input')
+        taskInput.setAttribute('id', 'task-input')
 
         dateInput.type = 'date';
         addButton.innerText = 'Add';
         cancelButton.innerText = 'Cancel'
+
+        addButton.classList.add('add-button')
+        cancelButton.classList.add('cancel-button')
 
 
         popUpContainer.classList.add('pop-up-container');
@@ -175,17 +189,31 @@ class DomController {
         taskDateContainer.appendChild(taskInput);
         taskDateContainer.appendChild(dateInput)
 
+        taskDateContainer.setAttribute('id', 'task-date-container')
+
+        buttonContainer.setAttribute('id', 'popup-button-container')
         buttonContainer.appendChild(addButton);
         buttonContainer.appendChild(cancelButton);
 
         popUpContainer.appendChild(taskDateContainer)
         popUpContainer.appendChild(buttonContainer)
 
-        addButton.addEventListener('click', () => {
 
-            if (taskInput.value === '' || dateInput.value === '') {
-                //Todo: add error message and CSS to show error
+        addButton.addEventListener('click', () => {
+            let input = document.querySelector('#task-input');
+            let dateInput = document.querySelector('#date-input');
+
+
+            if (input.value === '' && dateInput.value === '') {
+                dateInput.setCustomValidity('Please enter a date');
+                input.setCustomValidity('Please enter a task');
+                return;
+            } else if (dateInput.value === '') {
+                dateInput.setCustomValidity('Please enter a date');
                 return
+            } else if (input.value === '') {
+                input.setCustomValidity('Please enter a task');
+                return;
             } else {
 
                 let newTask = new Task(uniqueId, taskInput.value, dateInput.value);
@@ -367,6 +395,9 @@ class DomController {
         let taskFolderButton = document.createElement('button');
         taskFolderButton.innerText = newTaskFolder.getName();
         taskFolderButton.setAttribute('id', newTaskFolder.getName());
+        taskFolderButton.classList.add('taskfolder-button');
+
+
         taskFolderButton.addEventListener('click', () => {
             currentTaskFolder = newTaskFolder.getName();
             console.log(`The current taskfolder has been changed to ${currentTaskFolder}`)
@@ -615,7 +646,6 @@ let currentTaskFolder = 'Main';
 let MainTaskFolderContainer = new TaskFolderContainer('TaskFolderContainer');
 
 
-//todo need to rewrite functions to pull folder from taskfolder container, not just main folder. Current task folder will be a global way to keep track of which folder is being used!
 mainFolderButton.addEventListener('click', () => {
     currentTaskFolder = 'Main';
     console.log(`The current taskfolder has been changed to ${currentTaskFolder}`)
