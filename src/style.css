@@ -250,11 +250,11 @@ input:invalid {
 }
 
 .add-button:hover {
-    background-color: #2c974b;
+    background-color: #4f7942;
 }
 
 .cancel-button:hover {
-    background-color: #c00f0f;
+    background-color: #880808;
 }
 
 .cancel-button {
@@ -262,3 +262,8 @@ input:invalid {
 }
 
 
+.edit-img {
+    width: 2.5rem;
+    height: 2.5rem;
+    cursor: pointer;
+}

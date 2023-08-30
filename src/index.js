@@ -1,10 +1,12 @@
 import {compareAsc, format} from 'date-fns'
 import css from "./style.css";
 import {te, th} from "date-fns/locale";
+import checkMarkHover from "./checkMarkHover.svg"
 
 //todo Add way to delete task folders
 //todo work on css
 //todo Fix bug where extra Addtaskfolder button is created before you add a task folder
+
 
 function localStorageRefresh(item) {
     localStorage.setItem(item.getName(), JSON.stringify(item));
@@ -245,11 +247,22 @@ class DomController {
         let checkBox = document.createElement('input');
         let taskInfo = document.createElement('div');
         let taskDate = document.createElement('input');
-        let editButton = document.createElement('button');
 
 
-        //taskID = taskID || uniqueId
-        console.log(taskID)
+        const editImg = document.createElement('img');
+        const editImgHover = document.createElement('img');
+        const checkMark = document.createElement('img');
+        const checkMarkHover = document.createElement('img');
+
+        checkMarkHover.src = "./9255a9fa4b52f69c4d60.svg"
+        checkMark.src = "./921761edc49b6165eeb8.svg"
+        editImgHover.src = "./4e81888b154c1edd1157.svg"
+        editImg.src = "./3ea4cf483224d228ffe4.svg";
+
+        checkMark.classList.add('edit-img');
+        editImg.classList.add('edit-img');
+
+
         if (taskID !== uniqueId) {
             task.setAttribute('id', taskID)
         } else {
@@ -271,7 +284,6 @@ class DomController {
 
         checkBox.type = 'checkbox'
 
-        editButton.innerText = 'Edit'
 
         checkBox.addEventListener('click', () => {
             if (checkBox.checked) {
@@ -285,24 +297,55 @@ class DomController {
 
         })
 
-        editButton.addEventListener('click', () => {
+        editImg.addEventListener('mouseover', () => {
+            editImg.style.cursor = 'finger';
+            editImg.src = editImgHover.src;
+
+        })
+        editImg.addEventListener('mouseout', () => {
+            editImg.src = "./3ea4cf483224d228ffe4.svg";
+        })
+
+        editImg.addEventListener('click', () => {
             taskDate.disabled = false;
             taskInfo.contentEditable = true;
-            editButton.innerText = 'Save';
-            editButton.addEventListener('click', () => {
-                taskDate.disabled = true;
-                taskInfo.contentEditable = false;
-                editButton.innerText = 'Edit';
-                MainTaskFolderContainer.getTaskFolder(currentTaskFolder).getTask(task.id).setDesciption(taskInfo.innerText);
-                MainTaskFolderContainer.getTaskFolder(currentTaskFolder).getTask(task.id).setDueDate(taskDate.value);
 
-                localStorageRefresh(MainTaskFolderContainer);
-            })
+            //replaces child, refer to this line if bug arises later
+            task.replaceChild(checkMark, editImg)
+
 
         })
 
+
+        checkMark.addEventListener('mouseover', () => {
+            checkMark.style.cursor = 'finger';
+            checkMark.src = checkMarkHover.src;
+
+        })
+
+        checkMark.addEventListener('mouseout', () => {
+            checkBox.style.cursor = 'finger';
+            checkMark.src = './921761edc49b6165eeb8.svg';
+
+        })
+
+
+        checkMark.addEventListener('click', () => {
+            taskDate.disabled = true;
+            taskInfo.contentEditable = false;
+            editImg.src = "./3ea4cf483224d228ffe4.svg";
+            MainTaskFolderContainer.getTaskFolder(currentTaskFolder).getTask(task.id).setDesciption(taskInfo.innerText);
+            MainTaskFolderContainer.getTaskFolder(currentTaskFolder).getTask(task.id).setDueDate(taskDate.value);
+
+
+            localStorageRefresh(MainTaskFolderContainer);
+            //replaces child, refer to this line if bug arises later
+            task.replaceChild(editImg, checkMark);
+        })
+
         checkBoxContainer.appendChild(checkBox);
-        task.appendChild(editButton);
+
+        task.appendChild(editImg);
         checkBoxContainer.appendChild(taskInfo);
         task.appendChild(checkBoxContainer);
 
@@ -663,9 +706,5 @@ let domControl = new DomController();
 domControl.populateDomFromLocalStorage('Main');
 
 domControl.createAddTaskFolderButton()
-
-
-
-
 
 
