@@ -247,12 +247,16 @@ class DomController {
         let checkBox = document.createElement('input');
         let taskInfo = document.createElement('div');
         let taskDate = document.createElement('input');
+        let taskInfoContainer = document.createElement('div');
+        let taskDateContainer = document.createElement('div');
 
 
         const editImg = document.createElement('img');
         const editImgHover = document.createElement('img');
         const checkMark = document.createElement('img');
         const checkMarkHover = document.createElement('img');
+
+        taskDateContainer.classList.add('task-date-container')
 
         checkMarkHover.src = "./9255a9fa4b52f69c4d60.svg"
         checkMark.src = "./921761edc49b6165eeb8.svg"
@@ -280,6 +284,7 @@ class DomController {
         checkBoxContainer.classList.add('checkbox-container')
         taskInfo.classList.add('task-info')
         taskInfo.innerText = taskText;
+        taskInfoContainer.classList.add('task-info-container')
 
 
         checkBox.type = 'checkbox'
@@ -311,7 +316,7 @@ class DomController {
             taskInfo.contentEditable = true;
 
             //replaces child, refer to this line if bug arises later
-            task.replaceChild(checkMark, editImg)
+            checkBoxContainer.replaceChild(checkMark, editImg)
 
 
         })
@@ -340,16 +345,19 @@ class DomController {
 
             localStorageRefresh(MainTaskFolderContainer);
             //replaces child, refer to this line if bug arises later
-            task.replaceChild(editImg, checkMark);
+            checkBoxContainer.replaceChild(editImg, checkMark);
         })
+
 
         checkBoxContainer.appendChild(checkBox);
 
-        task.appendChild(editImg);
-        checkBoxContainer.appendChild(taskInfo);
-        task.appendChild(checkBoxContainer);
+        checkBoxContainer.appendChild(editImg);
 
-        task.appendChild(taskDate);
+        task.appendChild(checkBoxContainer);
+        taskInfoContainer.appendChild(taskInfo);
+        task.appendChild(taskInfoContainer)
+        taskDateContainer.appendChild(taskDate)
+        task.appendChild(taskDateContainer);
 
 
         taskDetailContainer.setAttribute('id', taskInfo + 'div')

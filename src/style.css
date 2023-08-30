@@ -3,6 +3,7 @@ body {
     padding: 0;
     margin: 0;
     height: 100vh;
+    width: 100vw;
 
 
 }
@@ -28,18 +29,19 @@ body {
 }
 
 .task-sidebar {
-    min-width: 10%;
+    min-width: 12%;
+
     border-right: black solid 2px;
     padding: 10px;
 
 }
 
+
 .task-detail-container {
     display: flex;
     flex-direction: column;
-    width: 90%;
-    gap: 15px;
-    padding: 20px;
+    width: 88%;
+    align-content: center;
 
 
 }
@@ -48,19 +50,71 @@ body {
     display: flex;
     gap: 20px;
     justify-content: space-between;
-    border-bottom: solid black 2px;
+    border-top: groove #b2beb5 2px;
+    border-bottom: groove #b2beb5 2px;
     padding: 20px;
+    align-content: center;
+    border-width: thin;
 
 
 }
 
-.task-detail-container input {
-    width: 20.5rem;
+.task:hover {
+    background-color: #f2f2f2;
+    border-color: black;
+    border-width: medium;
+
 }
+
+.task-info {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    /* makes the text wrap */
+    word-break: break-all;
+
+
+}
+
+.task-info-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-self: center;
+    justify-self: center;
+    justify-content: center;
+    align-content: center;
+    max-width: 50%;
+
+}
+
+.task-date-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.checkbox-container {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
 
 .create-buttonDiv {
     display: flex;
     justify-content: center;
+    padding: 20px;
+    align-content: center;
+    margin-left: -3.125rem;
+
+}
+
+#create-task-folder-button {
+    margin-left: 0;
 }
 
 .checkbox-container {
@@ -263,7 +317,8 @@ input:invalid {
 
 
 .edit-img {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
     cursor: pointer;
+    margin-bottom: 0.125rem;
 }
