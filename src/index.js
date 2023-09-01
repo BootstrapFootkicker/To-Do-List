@@ -1,11 +1,12 @@
 import {compareAsc, format} from 'date-fns'
 import css from "./style.css";
-import {te, th} from "date-fns/locale";
-import checkMarkHover from "./checkMarkHover.svg"
+import {el, te, th} from "date-fns/locale";
+import Trash from "./Trash.svg"
+import TrashHover from "./TrashHover.svg"
 
-//todo Add way to delete task folders
+//todo Add restraint to creating task folders with leading numbers as the name
 //todo work on css
-//todo Fix bug where extra Addtaskfolder button is created before you add a task folder
+//todo fix color for taskbutton hover
 
 
 function localStorageRefresh(item) {
@@ -379,8 +380,14 @@ class DomController {
     PopulateFolderButtonsFromLocalStorage() {
         let taskFolderList = MainTaskFolderContainer.getTaskFolderList();
         for (let i = 1; i < taskFolderList.length; i++) {
+            console.log(i)
+            console.log("this is it " + document.querySelector((taskFolderList[i].getName().replace(/\s/g, '') + 'button-container')))
             if (document.querySelector('#' + CSS.escape(taskFolderList[i].getName())) === null) {
-                this.createTaskFolderButton(taskFolderList[i])
+                if (document.querySelector('#' + CSS.escape(taskFolderList[i].getName().replace(/\s/g, '') + 'button-container')) === null) {
+
+
+                    this.createTaskFolderButton(taskFolderList[i])
+                }
             } else {
                 console.log(`${taskFolderList[i].getName()}button already exists`)
             }
@@ -444,19 +451,97 @@ class DomController {
     createTaskFolderButton(newTaskFolder) {
         const buttonListContent = document.querySelector('.button-list-content');
         let taskFolderButton = document.createElement('button');
+        let trashImg = document.createElement('img');
+        let trashImgHover = document.createElement('img');
+        let trashButton = document.createElement('button');
+        let buttonContainer = document.createElement('div');
+
+
+        buttonContainer.classList.add('task-folder-container')
+        buttonContainer.setAttribute('id', newTaskFolder.getName().replace(/\s/g, '') + 'button-container')
+        trashButton.classList.add('trash-button');
+
+        trashButton.setAttribute('id', newTaskFolder.getName().replace(/\s/g, '') + 'trash-button')
+        //
+        // trashImgHover.src = './5aec9f44e8f425a9b48e.svg';
+        // trashImg.src = './a4d452793f9cabb4d420.svg'
+        // trashImg.classList.add('trash-img');
+
         taskFolderButton.innerText = newTaskFolder.getName();
-        taskFolderButton.setAttribute('id', newTaskFolder.getName());
+        taskFolderButton.setAttribute('id', newTaskFolder.getName().replace(/\s/g, ''));
         taskFolderButton.classList.add('taskfolder-button');
 
 
+        buttonContainer.appendChild(taskFolderButton);
+        buttonContainer.appendChild(trashButton);
+        buttonListContent.appendChild(buttonContainer);
+
+
+        trashButton.addEventListener('click', () => {
+            MainTaskFolderContainer.removeTaskFolder(newTaskFolder.getName());
+            let taskFolderContainer = document.querySelector('.task-folder-container');
+
+
+            if (currentTaskFolder === newTaskFolder.getName()) {
+                currentTaskFolder = 'Main';
+                buttonContainer.remove()
+
+                let taskDetailContainer = document.querySelector('.task-detail-container');
+                this.clear(taskDetailContainer)
+                this.populateDomFromLocalStorage('Main');
+                // this.PopulateFolderButtonsFromLocalStorage()
+            } else {
+                buttonContainer.remove()
+                // this.populateDomFromLocalStorage(currentTaskFolder);
+                // this.PopulateFolderButtonsFromLocalStorage()
+            }
+        });
+
+
         taskFolderButton.addEventListener('click', () => {
+            let taskFolderButtons = document.querySelectorAll('.taskfolder-button');
+            let mainFolderButton = document.querySelector('#Main-folder-button');
+            console.log(taskFolderButtons)
+            if (currentTaskFolder === 'Main') {
+                {
+                    mainFolderButton.setAttribute('style', 'background-color: white;')
+                }
+            }
+
+            if (currentTaskFolder !== newTaskFolder.getName()) {
+
+                taskFolderButtons.forEach(button => {
+                    {
+                        button.setAttribute('style', 'background-color: white;')
+                    }
+                })
+
+
+            }
             currentTaskFolder = newTaskFolder.getName();
+            if (currentTaskFolder === newTaskFolder.getName()) {
+                taskFolderButton.setAttribute('style', 'background-color: black;')
+            }
             console.log(`The current taskfolder has been changed to ${currentTaskFolder}`)
             let taskDetailContainer = document.querySelector('.task-detail-container');
             this.clear(taskDetailContainer)
             this.populateDomFromLocalStorage(newTaskFolder.getName());
+            console.log(taskFolderButtons)
         })
-        buttonListContent.appendChild(taskFolderButton);
+
+        taskFolderButton.addEventListener('mouseover', () => {
+            let trashButton = document.querySelector('#' + taskFolderButton.id + 'trash-button');
+            trashButton.style.visibility = 'visible';
+
+        })
+        taskFolderButton.addEventListener('mouseout', () => {
+            let trashButton = document.querySelector('#' + taskFolderButton.id + 'trash-button');
+            setTimeout(function () {
+                trashButton.style.visibility = 'hidden';
+            }, 3000);
+
+
+        });
 
     }
 }
@@ -520,6 +605,7 @@ class TaskFolderContainer {
 
         }
     }
+
 
     taskFolderExists(taskFolderName) {
         for (let i = 0; i < this._taskFolderList.length; i++) {
@@ -698,7 +784,22 @@ let MainTaskFolderContainer = new TaskFolderContainer('TaskFolderContainer');
 
 
 mainFolderButton.addEventListener('click', () => {
+
+    let taskFolderButtons = document.querySelectorAll('.taskfolder-button');
+    console.log(taskFolderButtons + 'taskfolderbuttons')
+    if (currentTaskFolder !== 'Main') {
+        taskFolderButtons.forEach(button => {
+            {
+                button.setAttribute('style', 'background-color: white;')
+            }
+        })
+    }
+
     currentTaskFolder = 'Main';
+
+    if (currentTaskFolder === 'Main') {
+        mainFolderButton.setAttribute('style', 'background-color: black;')
+    }
     console.log(`The current taskfolder has been changed to ${currentTaskFolder}`)
     let taskDetailContainer = document.querySelector('.task-detail-container');
     console.log(taskDetailContainer.className)
@@ -716,3 +817,6 @@ domControl.populateDomFromLocalStorage('Main');
 domControl.createAddTaskFolderButton()
 
 
+if (currentTaskFolder === 'Main') {
+    mainFolderButton.setAttribute('style', 'background-color: black;')
+}

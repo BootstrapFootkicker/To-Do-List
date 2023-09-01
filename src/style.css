@@ -204,6 +204,7 @@ input:invalid {
     flex-direction: column;
     gap: 10px;
     width: 100%;
+
 }
 
 .button-list-content button {
@@ -218,6 +219,7 @@ input:invalid {
     background-color: #fff;
     font-size: 16px;
     transition: 0.3s ease;
+    width: 100%;
 }
 
 
@@ -322,3 +324,38 @@ input:invalid {
     cursor: pointer;
     margin-bottom: 0.125rem;
 }
+
+
+.trash-button {
+    position: absolute;
+    background: url("./Trash.svg");
+    background-size: cover;
+    width: 30px;
+    height: 30px;
+    right: -.3%;
+    border-radius: 5px;
+    visibility: hidden;
+
+
+}
+
+
+.trash-button:hover {
+    background: url("./TrashHover.svg");
+    background-size: cover;
+    width: 30px;
+    height: 30px;
+    right: -.3%;
+    border-radius: 5px;
+
+}
+
+.task-folder-container {
+    position: relative;
+}
+
+.button-container {
+    position: relative;
+    flex: 1
+}
+
