@@ -136,6 +136,7 @@ class DomController {
             if (input.value === '' || MainTaskFolderContainer.taskFolderExists(input.value) === true) {
 
                 //Todo: add error message and CSS to show error
+                input.setCustomValidity('Please enter a unique task folder name');
                 return
             } else {
                 inputDiv.remove();
@@ -460,7 +461,7 @@ class DomController {
         buttonContainer.classList.add('task-folder-container')
         buttonContainer.setAttribute('id', newTaskFolder.getName().replace(/\s/g, '') + 'button-container')
         trashButton.classList.add('trash-button');
-
+        trashButton.innerText = 'X';
         trashButton.setAttribute('id', newTaskFolder.getName().replace(/\s/g, '') + 'trash-button')
         //
         // trashImgHover.src = './5aec9f44e8f425a9b48e.svg';
@@ -504,7 +505,7 @@ class DomController {
             console.log(taskFolderButtons)
             if (currentTaskFolder === 'Main') {
                 {
-                    mainFolderButton.setAttribute('style', 'background-color: white;')
+                    mainFolderButton.setAttribute('style', 'background-color: black;')
                 }
             }
 
@@ -512,7 +513,7 @@ class DomController {
 
                 taskFolderButtons.forEach(button => {
                     {
-                        button.setAttribute('style', 'background-color: white;')
+                        button.setAttribute('style', 'background-color: #1e1f21;')
                     }
                 })
 
@@ -790,7 +791,7 @@ mainFolderButton.addEventListener('click', () => {
     if (currentTaskFolder !== 'Main') {
         taskFolderButtons.forEach(button => {
             {
-                button.setAttribute('style', 'background-color: white;')
+                button.setAttribute('style', 'background-color: #1e1f21;')
             }
         })
     }

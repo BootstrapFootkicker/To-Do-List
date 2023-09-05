@@ -18,7 +18,8 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    border-bottom: black solid 2px;
+    border-bottom: #a2a0a2 solid 1px;
+    background-color: #1e1f21;
 }
 
 
@@ -26,11 +27,12 @@ body {
     display: flex;
     width: 100%;
     height: 100%;
+    background-color: #f2f2f2;
 }
 
 .task-sidebar {
     min-width: 12%;
-
+    background-color: #1e1f21;
     border-right: black solid 2px;
     padding: 10px;
 
@@ -60,7 +62,7 @@ body {
 }
 
 .task:hover {
-    background-color: #f2f2f2;
+    background-color: white;
     border-color: black;
     border-width: medium;
 
@@ -108,13 +110,23 @@ body {
     display: flex;
     justify-content: center;
     padding: 20px;
-    align-content: center;
+    align-items: center;
     margin-left: -3.125rem;
 
 }
 
 #create-task-folder-button {
-    margin-left: 0;
+    color: white;
+    padding: 15px 30px;
+    text-align: left;
+    border-radius: 5px;
+    width: 100%;
+}
+
+#create-task-folder-button:hover {
+    background-color: #313744;
+    color: white;
+    border: 1px solid gray;
 }
 
 .checkbox-container {
@@ -183,11 +195,20 @@ ul {
     background: none;
     border: none;
     text-decoration: none;
-    color: #777;
+    color: black;
     font-size: inherit;
     font-family: inherit;
     cursor: pointer;
-    padding: 0;
+
+    border-radius: 5px;
+    padding: 15px 30px;
+
+}
+
+.create-button:hover {
+    background-color: #313744;
+    color: white;
+    border: 1px solid gray;
 }
 
 
@@ -205,6 +226,7 @@ input:invalid {
     gap: 10px;
     width: 100%;
 
+
 }
 
 .button-list-content button {
@@ -213,19 +235,22 @@ input:invalid {
 
 .taskfolder-button {
     padding: 15px 30px;
-    border: 1px solid gray;
+    text-align: left;
     border-radius: 5px;
-    /*  border: none;*/
-    background-color: #fff;
+    border: none;
     font-size: 16px;
     transition: 0.3s ease;
     width: 100%;
+    color: white;
+    background-color: #1e1f21;
+
 }
 
 
 .taskfolder-button:hover {
     background-color: #313744;
     color: white;
+    border: 1px solid gray;
 }
 
 #Taskfolder-button-input-div {
@@ -328,25 +353,38 @@ input:invalid {
 
 .trash-button {
     position: absolute;
-    background: url("./Trash.svg");
-    background-size: cover;
+    /*background: url("./Trash.svg");*/
+    /*background-size: cover;*/
     width: 30px;
     height: 30px;
     right: -.3%;
     border-radius: 5px;
     visibility: hidden;
+    color: white;
+    border: none;
+    background: transparent;
+    font-size: 15px;
 
+
+}
+
+.Title {
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 0.125rem;
 
 }
 
 
 .trash-button:hover {
-    background: url("./TrashHover.svg");
-    background-size: cover;
+    /*background: url("./TrashHover.svg");*/
+    /*background-size: cover;*/
     width: 30px;
     height: 30px;
     right: -.3%;
     border-radius: 5px;
+    color: red;
 
 }
 
